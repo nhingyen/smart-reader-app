@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+
+class BookCard extends StatelessWidget {
+  final String title;
+  final String imgUrl;
+
+  const BookCard(this.title, this.imgUrl, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100,
+      margin: const EdgeInsets.only(right: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8), // bo góc
+            child: SizedBox(
+              height: 150,
+              width: double.infinity,
+              child: Image.network(imgUrl, fit: BoxFit.cover),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+}
