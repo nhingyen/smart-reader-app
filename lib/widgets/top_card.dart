@@ -7,8 +7,13 @@ class TopCard extends StatelessWidget {
   final String author;
   final double rating;
 
-  const TopCard(this.imgUrl, this.title, this.author, this.rating, {super.key});
-
+  const TopCard({
+    super.key,
+    required this.imgUrl,
+    required this.title,
+    required this.author,
+    required this.rating,
+  });
   @override
   Widget build(BuildContext context) {
     return Card(
