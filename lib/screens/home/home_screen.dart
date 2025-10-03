@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/author_avatar.dart';
 import 'package:smart_reader/widgets/book_card.dart';
+import 'package:smart_reader/widgets/footer/footer.dart';
+import 'package:smart_reader/widgets/special_card.dart';
 import 'package:smart_reader/widgets/top_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -259,23 +261,76 @@ class _HomeScreenState extends State<HomeScreen> {
                 Column(
                   children: [
                     TopCard(
-                      "https://sach.baikiemtra.com/uploads/book/lao-hac/lao-hac-nam-cao.jpg",
+                      "https://cdn1.fahasa.com/media/flashmagazine/images/page_images/khong_gia_dinh_tai_ban_2024/2024_11_05_16_37_52_1-390x510.jpg",
                       "Không gia đình",
                       "Hector Malot",
                       5.0,
                     ),
                     TopCard(
-                      "https://sach.baikiemtra.com/uploads/book/lao-hac/lao-hac-nam-cao.jpg",
+                      "https://cdn1.fahasa.com/media/flashmagazine/images/page_images/khong_gia_dinh_tai_ban_2024/2024_11_05_16_37_52_1-390x510.jpg",
                       "Không gia đình",
                       "Hector Malot",
                       4.6,
                     ),
                   ],
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Sách đặc biệt dành cho bạn",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        "Xem tất cả",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 225, // chiều cao cho list ngang
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      SpecialCard(
+                        "https://cdn1.fahasa.com/media/flashmagazine/images/page_images/khong_gia_dinh_tai_ban_2024/2024_11_05_16_37_52_1-390x510.jpg",
+                        "Không gia đình",
+                        "Hector Malot",
+                        5.0,
+                      ),
+                      SpecialCard(
+                        "https://cdn1.fahasa.com/media/flashmagazine/images/page_images/khong_gia_dinh_tai_ban_2024/2024_11_05_16_37_52_1-390x510.jpg",
+                        "Không gia đình",
+                        "Hector Malot",
+                        4.6,
+                      ),
+                      SpecialCard(
+                        "https://sach.baikiemtra.com/uploads/book/lao-hac/lao-hac-nam-cao.jpg",
+                        "Không gia đình",
+                        "Hector Malot",
+                        4.6,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: CustomFooter(
+        selectedIndex: 0,
+        onItemSelected: (index) {},
       ),
     );
   }

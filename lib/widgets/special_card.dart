@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 
-class TopCard extends StatelessWidget {
+class SpecialCard extends StatelessWidget {
   final String imgUrl;
   final String title;
   final String author;
   final double rating;
 
-  const TopCard(this.imgUrl, this.title, this.author, this.rating, {super.key});
+  const SpecialCard(
+    this.imgUrl,
+    this.title,
+    this.author,
+    this.rating, {
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
         side: const BorderSide(color: Colors.black, width: 0.2), // viền đen
@@ -21,29 +27,31 @@ class TopCard extends StatelessWidget {
       elevation: 3,
       child: Padding(
         padding: const EdgeInsets.all(8),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Cột 1: Ảnh
             Container(
-              width: 50,
-              height: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6),
-                image: DecorationImage(
-                  image: NetworkImage(imgUrl),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 12),
-
-            // Cột 2: Title + Author + Rating
-            Expanded(
+              // height: 230,
+              width: 132,
+              margin: const EdgeInsets.only(right: 2),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        imgUrl,
+                        height: 130,
+                        width: 100, // đặt chiều ngang cố định
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8),
                   Text(
                     title,
                     maxLines: 1,
@@ -58,6 +66,7 @@ class TopCard extends StatelessWidget {
                     style: const TextStyle(fontSize: 13, color: Colors.black54),
                   ),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(
                         Icons.star,
@@ -78,31 +87,9 @@ class TopCard extends StatelessWidget {
               ),
             ),
 
-            // Cột 3: Button
-            Align(
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ), // gọn nút
-                ),
-                child: Text(
-                  "Đọc ngay",
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textLight,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
+            const SizedBox(width: 12),
+
+            // Cột 2: Title + Author + Rating
           ],
         ),
       ),
