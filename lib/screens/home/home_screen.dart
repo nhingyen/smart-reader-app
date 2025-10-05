@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
@@ -16,7 +17,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HomeBloc()..add(LoadHomeDataEvent()),
+      create: (_) =>
+          HomeBloc(repository: BookRepository())..add(LoadHomeDataEvent()),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: BlocBuilder<HomeBloc, HomeState>(
@@ -140,7 +142,59 @@ class HomeScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 15),
+                          Text(
+                            "Thể loại sách bạn mê",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          // Categories Row
+                          SizedBox(
+                            height: 40,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: state.categories.map((c) {
+                                final selected =
+                                    state.selectedCategory?.name == c.name;
+                                return GestureDetector(
+                                  onTap: () {
+                                    print("👉 Category tapped: ${c.name}");
+                                    context.read<HomeBloc>().add(
+                                      CategorySelectedEvent(c),
+                                    );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HomeScreen(), // Thêm tạm trang Home trước đã
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      c.name,
+                                      style: TextStyle(
+                                        color: AppColors.textLight,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -173,7 +227,7 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
 
-                          SizedBox(height: 16),
+                          SizedBox(height: 5),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
