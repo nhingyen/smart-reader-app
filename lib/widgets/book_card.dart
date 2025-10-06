@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:smart_reader/models/book.dart';
 
 class BookCard extends StatelessWidget {
   final String title;
   final String imgUrl;
   final VoidCallback onTap;
 
-  const BookCard(this.title, this.imgUrl, this.onTap, {super.key});
+  const BookCard(
+    this.title,
+    this.imgUrl,
+    this.onTap, {
+    super.key,
+    // required Book book,
+  });
 
   @override
   Widget build(BuildContext context) {

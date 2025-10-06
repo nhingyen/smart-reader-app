@@ -172,7 +172,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<CategorySelectedEvent>((event, emit) async {
       emit(HomeLoading());
       try {
-        final books = await repository.getBooksByCategory(
+        final books = await repository.fetchBooksByCategory(
           event.category.endpoint,
         );
         if (state is HomeLoaded) {

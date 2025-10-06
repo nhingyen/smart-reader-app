@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
+import 'package:smart_reader/screens/category/category_screen.dart';
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
@@ -142,15 +143,38 @@ class HomeScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 15),
-                          Text(
-                            "Thể loại sách bạn mê",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          const SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Thể loại sách",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CategoryScreen(), // Thêm tạm trang Home trước đã
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "Xem tất cả",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 10),
+                          // SizedBox(height: 5),
                           // Categories Row
                           SizedBox(
                             height: 40,

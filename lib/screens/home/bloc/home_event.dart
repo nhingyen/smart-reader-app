@@ -1,19 +1,22 @@
 import 'package:equatable/equatable.dart';
-import 'package:smart_reader/models/categories.dart';
+import '../../../models/categories.dart';
 
 abstract class HomeEvent extends Equatable {
   const HomeEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> props() => [];
 }
 
-class LoadHomeDataEvent extends HomeEvent {}
+class LoadHomeDataEvent extends HomeEvent {
+  const LoadHomeDataEvent();
+}
 
 class CategorySelectedEvent extends HomeEvent {
   final BookCategory category;
-  CategorySelectedEvent(this.category);
+
+  const CategorySelectedEvent(this.category);
 
   @override
-  List<Object?> get props => [category];
+  List<Object?> props() => [category];
 }
