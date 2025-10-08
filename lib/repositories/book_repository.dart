@@ -21,6 +21,7 @@ class BookRepository {
     String endpoint, {
     int limit = 10,
   }) async {
+    print('📚 REPOSITORY: Fetching books for endpoint: $endpoint');
     await Future.delayed(const Duration(seconds: 1));
 
     switch (endpoint) {
@@ -37,7 +38,7 @@ class BookRepository {
             chapters: [], // có thể để rỗng
           ),
           Book(
-            id: "1",
+            id: "2",
             title: "Ông già và biển cả",
             author: "Hector Malot",
             imgUrl:
@@ -47,7 +48,7 @@ class BookRepository {
             chapters: [], // có thể để rỗng
           ),
           Book(
-            id: "1",
+            id: "3",
             title: "Ông già và biển cả",
             author: "Hector Malot",
             imgUrl:
@@ -57,7 +58,7 @@ class BookRepository {
             chapters: [], // có thể để rỗng
           ),
           Book(
-            id: "1",
+            id: "4",
             title: "Ông già và biển cả",
             author: "Hector Malot",
             imgUrl:
@@ -67,7 +68,7 @@ class BookRepository {
             chapters: [], // có thể để rỗng
           ),
           Book(
-            id: "1",
+            id: "5",
             title: "Ông già và biển cả",
             author: "Hector Malot",
             imgUrl:

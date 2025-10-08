@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/category/category_screen.dart';
+import 'package:smart_reader/screens/category_detail/category_detail_screen.dart';
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
@@ -193,7 +195,9 @@ class HomeScreen extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            HomeScreen(), // Thêm tạm trang Home trước đã
+                                            CategoryDetailScreen(
+                                              category: c,
+                                            ), // Thêm tạm trang Home trước đã
                                       ),
                                     );
                                   },
