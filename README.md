@@ -1,6 +1,6 @@
 # smart_reader
 
-A new Flutter project.
+A new Flutter project. App Smart Book
 
 ## Getting Started
 
