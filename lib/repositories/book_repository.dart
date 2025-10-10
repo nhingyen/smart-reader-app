@@ -3,12 +3,12 @@ import 'package:smart_reader/models/categories.dart';
 
 class BookRepository {
   final List<BookCategory> _categories = [
-    BookCategory(id: "1", name: "Sách văn học", endpoint: "literature"),
-    BookCategory(id: "2", name: "Sách lãng mạn", endpoint: "romance"),
-    BookCategory(id: "3", name: "Sách thiếu nhi", endpoint: "children"),
-    BookCategory(id: "4", name: "Sách khoa học", endpoint: "science"),
-    BookCategory(id: "5", name: "Sách truyện ngắn", endpoint: "short_stories"),
-    BookCategory(id: "6", name: "Sách trinh thám", endpoint: "mystery"),
+    BookCategory(id: "1", name: "văn học", endpoint: "literature"),
+    BookCategory(id: "2", name: "lãng mạn", endpoint: "romance"),
+    BookCategory(id: "3", name: "thiếu nhi", endpoint: "children"),
+    BookCategory(id: "4", name: "khoa học", endpoint: "science"),
+    BookCategory(id: "5", name: "truyện ngắn", endpoint: "short_stories"),
+    BookCategory(id: "6", name: "trinh thám", endpoint: "mystery"),
   ];
 
   /// Giả lập lấy danh sách thể loại
