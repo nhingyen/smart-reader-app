@@ -6,6 +6,7 @@ import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/category_detail/bloc/category_detail_bloc.dart';
 import 'package:smart_reader/screens/category_detail/bloc/category_detail_event.dart';
 import 'package:smart_reader/screens/category_detail/bloc/category_detail_state.dart';
+import 'package:smart_reader/screens/home/home_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/list_card.dart';
 import 'package:smart_reader/widgets/top_card.dart';
@@ -27,7 +28,12 @@ class CategoryDetailScreen extends StatelessWidget {
           leading: IconButton(
             padding: const EdgeInsets.only(left: 12),
             icon: const Icon(Icons.arrow_back_ios, size: 20),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
+            },
           ),
           title: Text(
             "Sách ${category.name}",
