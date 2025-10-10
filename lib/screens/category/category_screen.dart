@@ -5,6 +5,7 @@ import 'package:smart_reader/screens/category/bloc/category_bloc.dart';
 import 'package:smart_reader/screens/category/bloc/category_event.dart';
 import 'package:smart_reader/screens/category/bloc/category_state.dart';
 import 'package:smart_reader/screens/category_detail/category_detail_screen.dart';
+import 'package:smart_reader/screens/home/home_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/book_card.dart';
 
@@ -23,7 +24,12 @@ class CategoryScreen extends StatelessWidget {
           leading: IconButton(
             padding: const EdgeInsets.only(left: 12),
             icon: const Icon(Icons.arrow_back_ios, size: 20),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
+            },
           ),
           title: const Text("Thể loại sách", style: TextStyle(fontSize: 20)),
           backgroundColor: AppColors.primary,
