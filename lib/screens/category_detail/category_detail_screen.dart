@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
+import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
 import 'package:smart_reader/screens/category_detail/bloc/category_detail_bloc.dart';
 import 'package:smart_reader/screens/category_detail/bloc/category_detail_event.dart';
 import 'package:smart_reader/screens/category_detail/bloc/category_detail_state.dart';
@@ -55,13 +56,21 @@ class CategoryDetailScreen extends StatelessWidget {
                   final book = state.books[index];
                   // Sử dụng lại TopCard hoặc một widget phù hợp cho danh sách dọc
                   return GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              BookDetailScreen(bookId: book.bookId),
+                        ),
+                      );
+                    },
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 2),
                       child: ListCard(
                         imgUrl: book.imgUrl,
                         title: book.title,
-                        author: book.author,
+                        author: book.authorName,
                         description: book.description,
                         // Thêm onTap để chuyển đến màn hình chi tiết sách
                       ),

@@ -284,7 +284,7 @@ class HomeScreen extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               children: state.authors.map((a) {
                                 return AuthorAvatar(
-                                  name: a.name,
+                                  name: a.authorName,
                                   avatarUrl: a.avatarUrl,
                                   onTap: () {},
                                 );
@@ -319,7 +319,7 @@ class HomeScreen extends StatelessWidget {
                               return TopCard(
                                 imgUrl: c.imgUrl,
                                 title: c.title,
-                                author: c.author,
+                                author: c.authorName,
                                 rating: c.rating,
                               );
                             }).toList(),
@@ -354,7 +354,7 @@ class HomeScreen extends StatelessWidget {
                                 return SpecialCard(
                                   imgUrl: d.imgUrl,
                                   title: d.title,
-                                  author: d.author,
+                                  author: d.authorName,
                                   rating: d.rating,
                                   onTap: () {},
                                 );
