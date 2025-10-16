@@ -137,10 +137,11 @@ final List<Book> mockBooks = [
 
   Book(
     bookId: "4",
-    title: "Tình Yêu Trên Đỉnh Fansipan",
+    title: "Hai số phận",
     authorId: "a5",
     authorName: "Nguyễn Nhật Ánh",
-    imgUrl: "https://cdn.fahasa.com/media/catalog/product/i/m/image_197792.jpg",
+    imgUrl:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRezvyxp5-kuUyiFIJMjRmVulX6yqdnx4kU5w&s",
     rating: 4.3,
     description: "Câu chuyện lãng mạn, nhẹ nhàng, đậm chất tuổi học trò.",
     chapters: [],
@@ -156,7 +157,7 @@ final List<Book> mockBooks = [
     authorId: "a6",
     authorName: "J.K. Rowling",
     imgUrl:
-        "https://salt.tikicdn.com/cache/w1200/ts/product/d0/b1/7b/39b788a18357876a9a08e06307373f1d.jpg",
+        "https://play-lh.googleusercontent.com/xo2HfLoAszntYndTjrUhZXqa7xCmeSkSXxcsPPeQx3-cRrzYSGmbjSwKO2F7o-RWuJhy",
     rating: 4.9,
     description: "Khởi đầu của series huyền thoại về thế giới phép thuật.",
     chapters: [],
@@ -168,11 +169,11 @@ final List<Book> mockBooks = [
 
   Book(
     bookId: "6",
-    title: "Vũ Trụ Trong Vỏ Hạt Dẻ",
+    title: "Truyện Kiều",
     authorId: "a7",
     authorName: "Stephen Hawking",
     imgUrl:
-        "https://cdn1.fahasa.com/media/catalog/product/v/u/vu_tru_trong_vo_hat_de_1.jpg",
+        "https://product.hstatic.net/200000017360/product/truyenkieutb2_0ee50ff34c9547f89e51f41987adecaf_master.jpg",
     rating: 4.7,
     description:
         "Giải thích các khái niệm phức tạp của vật lý lý thuyết và vũ trụ học.",
