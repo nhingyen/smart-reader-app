@@ -1,13 +1,13 @@
 class Author {
-  final String id;
-  final String name;
-  final String bio;
+  final String authorId;
+  final String authorName;
+  final String authorBio;
   final String avatarUrl;
 
   Author({
-    required this.id,
-    required this.name,
-    this.bio = "",
+    required this.authorId,
+    required this.authorName,
+    this.authorBio = "",
     this.avatarUrl = "",
   });
 }

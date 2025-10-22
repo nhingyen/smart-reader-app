@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
+import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
 import 'package:smart_reader/screens/category/bloc/category_bloc.dart';
 import 'package:smart_reader/screens/category/bloc/category_event.dart';
 import 'package:smart_reader/screens/category/bloc/category_state.dart';
@@ -95,9 +96,20 @@ class CategoryScreen extends StatelessWidget {
                           final book = item.books[i];
                           return Padding(
                             padding: const EdgeInsets.only(right: 1),
-                            child: BookCard(book.title, book.imgUrl, () {
-                              // Handle book tap
-                            }),
+                            child: BookCard(
+                              book.bookId,
+                              book.title,
+                              book.imgUrl,
+                              () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        BookDetailScreen(bookId: book.bookId),
+                                  ),
+                                );
+                              },
+                            ),
                           );
                         },
                       ),

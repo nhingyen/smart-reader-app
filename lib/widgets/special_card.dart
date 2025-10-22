@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smart_reader/theme/app_colors.dart';
 
 class SpecialCard extends StatelessWidget {
+  final String bookId;
   final String imgUrl;
   final String title;
   final String author;
@@ -10,6 +10,7 @@ class SpecialCard extends StatelessWidget {
 
   const SpecialCard({
     super.key,
+    required this.bookId,
     required this.imgUrl,
     required this.title,
     required this.author,
