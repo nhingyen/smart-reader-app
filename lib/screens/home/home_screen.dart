@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
+import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
 import 'package:smart_reader/screens/category/category_screen.dart';
 import 'package:smart_reader/screens/category_detail/category_detail_screen.dart';
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
@@ -187,7 +188,7 @@ class HomeScreen extends StatelessWidget {
                                     state.selectedCategory?.name == c.name;
                                 return GestureDetector(
                                   onTap: () {
-                                    print("👉 Category tapped: ${c.name}");
+                                    print("=> Category tapped: ${c.name}");
                                     context.read<HomeBloc>().add(
                                       CategorySelectedEvent(c),
                                     );
@@ -250,7 +251,20 @@ class HomeScreen extends StatelessWidget {
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: state.continueReading.map((b) {
-                                return BookCard(b.title, b.imgUrl, () {});
+                                return BookCard(
+                                  b.bookId,
+                                  b.title,
+                                  b.imgUrl,
+                                  () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            BookDetailScreen(bookId: b.bookId),
+                                      ),
+                                    );
+                                  },
+                                );
                               }).toList(),
                             ),
                           ),
@@ -317,6 +331,7 @@ class HomeScreen extends StatelessWidget {
                           Column(
                             children: state.newBooks.map((c) {
                               return TopCard(
+                                bookId: c.bookId,
                                 imgUrl: c.imgUrl,
                                 title: c.title,
                                 author: c.authorName,
@@ -352,11 +367,20 @@ class HomeScreen extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               children: state.specialBooks.map((d) {
                                 return SpecialCard(
+                                  bookId: d.bookId,
                                   imgUrl: d.imgUrl,
                                   title: d.title,
                                   author: d.authorName,
                                   rating: d.rating,
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            BookDetailScreen(bookId: d.bookId),
+                                      ),
+                                    );
+                                  },
                                 );
                               }).toList(),
                             ),

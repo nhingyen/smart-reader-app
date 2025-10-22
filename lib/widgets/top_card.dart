@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 
 class TopCard extends StatelessWidget {
+  final String bookId;
   final String imgUrl;
   final String title;
   final String author;
@@ -9,6 +11,7 @@ class TopCard extends StatelessWidget {
 
   const TopCard({
     super.key,
+    required this.bookId,
     required this.imgUrl,
     required this.title,
     required this.author,
@@ -87,7 +90,14 @@ class TopCard extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookDetailScreen(bookId: bookId),
+                    ),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
