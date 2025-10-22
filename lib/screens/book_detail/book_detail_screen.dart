@@ -53,31 +53,28 @@ class BookDetailScreen extends StatelessWidget {
       child: NestedScrollView(
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return <Widget>[
+            SliverList(
+              delegate: SliverChildListDelegate([
+                // Đặt SafeArea xung quanh CustomHeaderIcons
+                SafeArea(
+                  bottom: false, // Không áp dụng padding dưới
+                  child: _buildCustomHeaderIcons(context, book.title),
+                ),
+              ]),
+            ),
             SliverAppBar(
-              // Nút back và share
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
-              ),
-              actions: [
-                IconButton(icon: const Icon(Icons.share), onPressed: () {}),
-              ],
-
-              title: innerBoxIsScrolled
-                  ? Text(book.title)
-                  : null, // Tiêu đề khi cuộn lên
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              pinned: true,
-              expandedHeight: 400.0, // Chiều cao tối đa của header
+              toolbarHeight: 0,
+              pinned: false,
+              expandedHeight: 320.0, // Chiều cao tối đa của header
 
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.pin,
                 background: Padding(
-                  padding: const EdgeInsets.only(top: 80, left: 16, right: 16),
+                  padding: const EdgeInsets.only(top: 3, left: 16, right: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // _buildCustomHeaderIcons(context, book.title),
                       _buildBookInfo(book), // Chứa ảnh và chi tiết sách
                       const SizedBox(height: 20),
                       _buildActionButtons(book),
@@ -103,7 +100,7 @@ class BookDetailScreen extends StatelessWidget {
         // Nội dung của Tab Bar View
         body: TabBarView(
           children: [
-            BookSynopsisTab(description: book.description),
+            BookSynopsisTab(book: book),
             BookChaptersTab(chapters: book.chapters),
             const Center(child: Text("Chức năng Reviews")),
           ],
@@ -112,6 +109,31 @@ class BookDetailScreen extends StatelessWidget {
     );
   }
 
+  // Trong class BookDetailScreen (Thêm vào cùng nơi với các hàm _build...)
+
+  Widget _buildCustomHeaderIcons(BuildContext context, String title) {
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.share, color: Colors.black),
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
   // Trong BookDetailScreen.dart (Hàm _buildActionButtons)
 
   Widget _buildActionButtons(Book book) {
@@ -141,7 +163,7 @@ class BookDetailScreen extends StatelessWidget {
         Row(
           children: [
             ListButtons(
-              isAdded ? "Added" : "Thêm thư viện",
+              isAdded ? "Đã thêm vào" : "Thêm thư viện",
               isAdded ? Icons.check : Icons.add,
               () {},
             ),
@@ -222,8 +244,8 @@ class BookDetailScreen extends StatelessWidget {
 
 // Cần tạo các file widget này để chứa nội dung từng Tab
 class BookSynopsisTab extends StatelessWidget {
-  final String description;
-  const BookSynopsisTab({super.key, required this.description});
+  final Book book;
+  const BookSynopsisTab({super.key, required this.book});
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +259,7 @@ class BookSynopsisTab extends StatelessWidget {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
-          Text(description, style: TextStyle(color: Colors.black54)),
+          Text(book.description, style: TextStyle(color: Colors.black54)),
           // ... Thêm các Tags/Genres tại đây
         ],
       ),
@@ -257,7 +279,7 @@ class BookChaptersTab extends StatelessWidget {
       itemBuilder: (context, index) {
         return ListTile(
           title: Text(chapters[index].title),
-          leading: Text("${index + 1}."),
+          // leading: Text("${index + 1}."),
           onTap: () {
             // TODO: Điều hướng đến ReaderScreen với nội dung chapters[index].content
           },
