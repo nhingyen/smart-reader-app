@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/models/book.dart';
-import 'package:smart_reader/models/chapter.dart';
+import 'package:smart_reader/models/chapter_info.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_bloc.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_event.dart';
@@ -207,7 +207,7 @@ class BookDetailScreen extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  book.authorName,
+                  book.author.authorName,
                   style: const TextStyle(
                     color: AppColors.primary,
                     fontSize: 15,
@@ -268,7 +268,7 @@ class BookSynopsisTab extends StatelessWidget {
 }
 
 class BookChaptersTab extends StatelessWidget {
-  final List<Chapter> chapters; // Giả định Chapter là Model bạn đã tạo
+  final List<ChapterInfo> chapters; // Giả định Chapter là Model bạn đã tạo
   const BookChaptersTab({super.key, required this.chapters});
 
   @override

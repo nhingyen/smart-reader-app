@@ -70,7 +70,7 @@ class CategoryDetailScreen extends StatelessWidget {
                       child: ListCard(
                         imgUrl: book.imgUrl,
                         title: book.title,
-                        author: book.authorName,
+                        author: book.author.authorName,
                         description: book.description,
                         // Thêm onTap để chuyển đến màn hình chi tiết sách
                       ),

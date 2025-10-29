@@ -334,7 +334,7 @@ class HomeScreen extends StatelessWidget {
                                 bookId: c.bookId,
                                 imgUrl: c.imgUrl,
                                 title: c.title,
-                                author: c.authorName,
+                                author: c.author.authorName,
                                 rating: c.rating,
                               );
                             }).toList(),
@@ -370,7 +370,7 @@ class HomeScreen extends StatelessWidget {
                                   bookId: d.bookId,
                                   imgUrl: d.imgUrl,
                                   title: d.title,
-                                  author: d.authorName,
+                                  author: d.author.authorName,
                                   rating: d.rating,
                                   onTap: () {
                                     Navigator.push(
