@@ -7,7 +7,10 @@ import 'package:smart_reader/models/chapter_detail.dart';
 import 'package:http/http.dart' as http;
 
 class BookRepository {
-  static const String _baseUrl = "http:127.0.0.1:5001";
+  static const String _baseUrl = "http://192.168.1.138:5001";
+  // 3. Dùng cho Điện thoại thật (CẮM CÁP hoặc CÙNG WIFI):
+  // (Thay 192.168.1.5 bằng IP Wifi của MÁY TÍNH bạn)
+  // static const String _baseUrl = "http://192.168.1.5:5001";
 
   //Helper function để xử lý response
   dynamic _handleResponse(http.Response response) {

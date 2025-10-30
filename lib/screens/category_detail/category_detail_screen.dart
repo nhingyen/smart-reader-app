@@ -37,7 +37,7 @@ class CategoryDetailScreen extends StatelessWidget {
             },
           ),
           title: Text(
-            "Sách ${category.name}",
+            "Sách ${category.categoryName}",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
           ),
           backgroundColor: AppColors.primary,

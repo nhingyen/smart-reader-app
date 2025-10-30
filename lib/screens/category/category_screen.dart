@@ -57,7 +57,7 @@ class CategoryScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            item.category.name,
+                            item.category.categoryName,
                             style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w500,

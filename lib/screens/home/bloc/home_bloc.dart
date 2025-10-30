@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/models/author.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
-import 'package:smart_reader/repositories/_mock_data.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
@@ -16,48 +15,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadHomeDataEvent>((event, emit) async {
       emit(HomeLoading());
       try {
-        //giả lập dữ liệu (sau này thay bằng MongoDB / API call)
-        await Future.delayed(Duration(seconds: 1));
-
-        final continueReading = mockBooks
-            .where(
-              (b) =>
-                  b.bookId == "1" ||
-                  b.bookId == "2" ||
-                  b.bookId == "3" ||
-                  b.bookId == "12",
-            )
-            .toList();
-        final authors = mockAuthors;
-        final newBooks = mockBooks
-            .where((b) => b.bookId == "1" || b.bookId == "2")
-            .toList();
-        final specialBooks = mockBooks
-            .where((b) => b.bookId == "1" || b.bookId == "2")
-            .toList();
-
-        final List<BookCategory> categories = [
-          BookCategory(id: "1", name: "Văn học", endpoint: "literature"),
-          BookCategory(id: "2", name: "Lãng mạn", endpoint: "romance"),
-          BookCategory(id: "3", name: "Thiếu nhi", endpoint: "children"),
-          BookCategory(id: "5", name: "Khoa học", endpoint: "science"),
-          BookCategory(id: "5", name: "Truyện ngắn", endpoint: "short_stories"),
-          BookCategory(id: "6", name: "Trinh thám", endpoint: "mystery"),
-        ];
+        final homeData = await repository.fetchHomeData();
 
         emit(
           HomeLoaded(
-            continueReading: continueReading,
-            authors: authors,
-            newBooks: newBooks,
-            specialBooks: specialBooks,
-            categories: categories,
+            continueReading: homeData['continueReading'],
+            authors: homeData['authors'],
+            newBooks: homeData['newBooks'],
+            specialBooks: homeData['specialBooks'],
+            categories: homeData['categories'],
           ),
         );
       } catch (e) {
+        print("HomeBloc Error: $e");
         emit(HomeError("Lỗi load dữ liệu: $e"));
       }
     });
+
     on<CategorySelectedEvent>((event, emit) async {
       emit(HomeLoading());
       try {
