@@ -37,7 +37,7 @@ class CategoryDetailScreen extends StatelessWidget {
             },
           ),
           title: Text(
-            "Sách ${category.name}",
+            "Sách ${category.categoryName}",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
           ),
           backgroundColor: AppColors.primary,
@@ -70,7 +70,7 @@ class CategoryDetailScreen extends StatelessWidget {
                       child: ListCard(
                         imgUrl: book.imgUrl,
                         title: book.title,
-                        author: book.authorName,
+                        author: book.author.authorName,
                         description: book.description,
                         // Thêm onTap để chuyển đến màn hình chi tiết sách
                       ),

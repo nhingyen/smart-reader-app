@@ -10,4 +10,13 @@ class Author {
     this.authorBio = "",
     this.avatarUrl = "",
   });
+
+  factory Author.fromJson(Map<String, dynamic> json) {
+    return Author(
+      authorId: json['_id'] ?? '',
+      authorName: json['authorName'] ?? 'Không rõ tác giả',
+      authorBio: json['authorBio'] ?? '',
+      avatarUrl: json['avatarUrl'] ?? '',
+    );
+  }
 }

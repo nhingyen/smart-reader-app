@@ -185,10 +185,13 @@ class HomeScreen extends StatelessWidget {
                               scrollDirection: Axis.horizontal,
                               children: state.categories.map((c) {
                                 final selected =
-                                    state.selectedCategory?.name == c.name;
+                                    state.selectedCategory?.categoryName ==
+                                    c.categoryName;
                                 return GestureDetector(
                                   onTap: () {
-                                    print("=> Category tapped: ${c.name}");
+                                    print(
+                                      "=> Category tapped: ${c.categoryName}",
+                                    );
                                     context.read<HomeBloc>().add(
                                       CategorySelectedEvent(c),
                                     );
@@ -213,7 +216,7 @@ class HomeScreen extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
-                                      c.name,
+                                      c.categoryName,
                                       style: TextStyle(
                                         color: AppColors.textLight,
                                         fontWeight: FontWeight.w600,
@@ -334,7 +337,7 @@ class HomeScreen extends StatelessWidget {
                                 bookId: c.bookId,
                                 imgUrl: c.imgUrl,
                                 title: c.title,
-                                author: c.authorName,
+                                author: c.author.authorName,
                                 rating: c.rating,
                               );
                             }).toList(),
@@ -370,7 +373,7 @@ class HomeScreen extends StatelessWidget {
                                   bookId: d.bookId,
                                   imgUrl: d.imgUrl,
                                   title: d.title,
-                                  author: d.authorName,
+                                  author: d.author.authorName,
                                   rating: d.rating,
                                   onTap: () {
                                     Navigator.push(
