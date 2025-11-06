@@ -167,6 +167,9 @@ class BookDetailScreen extends StatelessWidget {
                       chapterId: firstChapter.id,
                       chapterTitle: firstChapter.title,
                       bookTitle: book.title,
+
+                      allChapters: book.chapters,
+                      currentChapterIndex: 0, // First chapter has index 0
                     ),
                   ),
                 );
@@ -316,9 +319,14 @@ class BookChaptersTab extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => ReaderScreen(
+                  // 1. Thông tin chương hiện tại
                   chapterId: chapter.id,
                   chapterTitle: chapter.title,
                   bookTitle: book.title,
+
+                  // 2. Thông tin để lật trang
+                  allChapters: book.chapters,
+                  currentChapterIndex: index,
                 ),
               ),
             );

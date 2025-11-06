@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:smart_reader/models/chapter_info.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_bloc.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_state.dart';
@@ -9,12 +10,16 @@ class ReaderScreen extends StatelessWidget {
   final String chapterId;
   final String bookTitle;
   final String chapterTitle;
+  final List<ChapterInfo> allChapters;
+  final int currentChapterIndex;
 
   const ReaderScreen({
     super.key,
     required this.chapterId,
     required this.bookTitle,
     required this.chapterTitle,
+    required this.allChapters,
+    required this.currentChapterIndex,
   });
 
   @override
@@ -99,6 +104,9 @@ class ReaderScreen extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
+
+                // === 3. THÊM WIDGET MỚI (NÚT LẬT TRANG) ===
+                _buildChapterNavigation(context),
               ],
             ),
           );
@@ -127,7 +135,7 @@ class ReaderScreen extends StatelessWidget {
           const SizedBox(height: 4),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -198,6 +206,86 @@ class ReaderScreen extends StatelessWidget {
           Text(label, style: TextStyle(color: Colors.grey[700], fontSize: 11)),
         ],
       ),
+    );
+  }
+
+  Widget _buildChapterNavigation(BuildContext context) {
+    //kiem tra xem co chuong truoc khogn
+    final bool hasPrevious = currentChapterIndex > 0;
+    //kiem tra xem co chuong sau ko
+    final bool hasNext = currentChapterIndex < allChapters.length - 1;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        if (hasPrevious)
+          TextButton(
+            child: Row(
+              children: [
+                const Icon(Icons.arrow_back_ios, size: 13, color: Colors.black),
+                SizedBox(width: 3),
+                Text(
+                  "Chương trước",
+                  style: TextStyle(fontSize: 15, color: Colors.black),
+                ),
+              ],
+            ),
+            onPressed: () {
+              final prevChapter = allChapters[currentChapterIndex - 1];
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReaderScreen(
+                    chapterId: prevChapter.id,
+                    bookTitle: bookTitle,
+                    chapterTitle: prevChapter.title,
+                    allChapters: allChapters,
+                    currentChapterIndex: currentChapterIndex - 1,
+                  ),
+                ),
+              );
+            },
+          )
+        else
+          Container(), // Để trống nếu không có chương trước
+        // NÚT CHƯƠNG SAU
+        if (hasNext)
+          TextButton(
+            child: Row(
+              children: [
+                Text(
+                  "Chương sau",
+                  style: TextStyle(fontSize: 15, color: Colors.black),
+                ),
+                SizedBox(width: 3),
+                const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 13,
+                  color: Colors.black,
+                ),
+              ],
+            ),
+            onPressed: () {
+              // Lấy thông tin chương sau
+              final nextChapter = allChapters[currentChapterIndex + 1];
+              // Thay thế màn hình hiện tại bằng màn hình mới (chương sau)
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReaderScreen(
+                    chapterId: nextChapter.id,
+                    chapterTitle: nextChapter.title,
+                    bookTitle: bookTitle,
+                    allChapters: allChapters,
+                    currentChapterIndex: currentChapterIndex + 1,
+                  ),
+                ),
+              );
+            },
+          )
+        else
+          Container(), // Để trống nếu không có chương sau
+      ],
     );
   }
 }
