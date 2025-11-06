@@ -6,6 +6,7 @@ import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_bloc.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_event.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_state.dart';
+import 'package:smart_reader/screens/reader/reader_sceen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/buttons.dart';
 // ... import các file BLoC và Repository của bạn
@@ -77,7 +78,7 @@ class BookDetailScreen extends StatelessWidget {
                       // _buildCustomHeaderIcons(context, book.title),
                       _buildBookInfo(book), // Chứa ảnh và chi tiết sách
                       const SizedBox(height: 20),
-                      _buildActionButtons(book),
+                      _buildActionButtons(context, book),
                     ],
                   ),
                 ),
@@ -101,7 +102,7 @@ class BookDetailScreen extends StatelessWidget {
         body: TabBarView(
           children: [
             BookSynopsisTab(book: book),
-            BookChaptersTab(chapters: book.chapters),
+            BookChaptersTab(book: book, chapters: book.chapters),
             const Center(child: Text("Chức năng Reviews")),
           ],
         ),
@@ -136,7 +137,7 @@ class BookDetailScreen extends StatelessWidget {
   }
   // Trong BookDetailScreen.dart (Hàm _buildActionButtons)
 
-  Widget _buildActionButtons(Book book) {
+  Widget _buildActionButtons(BuildContext context, Book book) {
     // Lấy trạng thái của nút Add to Library
     final bool isAdded = book.isAddedToLibrary;
 
@@ -153,7 +154,35 @@ class BookDetailScreen extends StatelessWidget {
               isPrimary: true, //nút chính
             ),
             const SizedBox(width: 10),
-            ListButtons("Đọc ngay", Icons.menu_book, () {}),
+            ListButtons("Đọc ngay", Icons.menu_book, () {
+              print('đang vào chương 1 đọc');
+              //kiem tra xem danh sach co chuong nào ko
+              if (book.chapters.isNotEmpty) {
+                final firstChapter = book.chapters[0];
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReaderScreen(
+                      chapterId: firstChapter.id,
+                      chapterTitle: firstChapter.title,
+                      bookTitle: book.title,
+
+                      allChapters: book.chapters,
+                      currentChapterIndex: 0, // First chapter has index 0
+                    ),
+                  ),
+                );
+              } else {
+                // Tùy chọn: Hiển thị thông báo nếu không có chương
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Sách này hiện chưa có chương nào."),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            }),
           ],
         ),
 
@@ -268,8 +297,13 @@ class BookSynopsisTab extends StatelessWidget {
 }
 
 class BookChaptersTab extends StatelessWidget {
-  final List<ChapterInfo> chapters; // Giả định Chapter là Model bạn đã tạo
-  const BookChaptersTab({super.key, required this.chapters});
+  final Book book;
+  final List<ChapterInfo> chapters;
+  const BookChaptersTab({
+    super.key,
+    required this.book,
+    required this.chapters,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -277,11 +311,25 @@ class BookChaptersTab extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       itemCount: chapters.length,
       itemBuilder: (context, index) {
+        final chapter = chapters[index];
         return ListTile(
-          title: Text(chapters[index].title),
-          // leading: Text("${index + 1}."),
+          title: Text(chapter.title),
           onTap: () {
-            // TODO: Điều hướng đến ReaderScreen với nội dung chapters[index].content
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ReaderScreen(
+                  // 1. Thông tin chương hiện tại
+                  chapterId: chapter.id,
+                  chapterTitle: chapter.title,
+                  bookTitle: book.title,
+
+                  // 2. Thông tin để lật trang
+                  allChapters: book.chapters,
+                  currentChapterIndex: index,
+                ),
+              ),
+            );
           },
         );
       },

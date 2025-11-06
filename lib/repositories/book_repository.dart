@@ -5,9 +5,10 @@ import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/models/chapter_detail.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BookRepository {
-  static const String _baseUrl = "http://192.168.1.138:5001";
+  static final String _baseUrl = dotenv.env['baseURL']!;
   // 3. Dùng cho Điện thoại thật (CẮM CÁP hoặc CÙNG WIFI):
   // (Thay 192.168.1.5 bằng IP Wifi của MÁY TÍNH bạn)
   // static const String _baseUrl = "http://192.168.1.5:5001";

@@ -23,7 +23,7 @@ class ListButtons extends StatelessWidget {
         : AppColors.primary; // Màu chữ và icon
     return Expanded(
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: onPressed,
 
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
