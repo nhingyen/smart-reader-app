@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_reader/models/book.dart';
+// import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
@@ -10,7 +10,7 @@ import 'package:smart_reader/screens/category_detail/bloc/category_detail_state.
 import 'package:smart_reader/screens/home/home_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/list_card.dart';
-import 'package:smart_reader/widgets/top_card.dart';
+// import 'package:smart_reader/widgets/top_card.dart';
 
 class CategoryDetailScreen extends StatelessWidget {
   final BookCategory category;

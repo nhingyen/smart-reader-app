@@ -5,7 +5,7 @@ abstract class HomeEvent extends Equatable {
   const HomeEvent();
 
   @override
-  List<Object?> props() => [];
+  List<Object?> get props => [];
 }
 
 class LoadHomeDataEvent extends HomeEvent {
@@ -18,5 +18,5 @@ class CategorySelectedEvent extends HomeEvent {
   const CategorySelectedEvent(this.category);
 
   @override
-  List<Object?> props() => [category];
+  List<Object?> get props => [category];
 }
