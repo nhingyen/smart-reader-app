@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_bloc.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_event.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_state.dart';
-import 'package:smart_reader/screens/login/register_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,45 +31,58 @@ class LoginScreen extends StatelessWidget {
             );
           }
         },
-        child: const _LoginScreenContent(),
+        child: const _RegisterScreenContent(),
       ),
     );
   }
 }
 
-class _LoginScreenContent extends StatefulWidget {
-  const _LoginScreenContent();
+class _RegisterScreenContent extends StatefulWidget {
+  const _RegisterScreenContent();
 
   @override
-  State<_LoginScreenContent> createState() => _LoginScreenContentState();
+  State<_RegisterScreenContent> createState() => _RegisterScreenContentState();
 }
 
-class _LoginScreenContentState extends State<_LoginScreenContent> {
+class _RegisterScreenContentState extends State<_RegisterScreenContent> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  bool _acceptTerms = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _handleEmailLogin() {
+  void _handleRegister() {
     if (_formKey.currentState?.validate() ?? false) {
+      if (!_acceptTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Vui lòng đồng ý với điều khoản dịch vụ'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
       context.read<AuthBloc>().add(
-        LoginWithEmailEvent(
+        RegisterEvent(
+          name: _nameController.text.trim(),
           email: _emailController.text.trim(),
           password: _passwordController.text,
         ),
       );
     }
-  }
-
-  void _handleGoogleLogin() {
-    context.read<AuthBloc>().add(const LoginWithGoogleEvent());
   }
 
   @override
@@ -113,18 +125,18 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
 
             // Main content
             Expanded(
-              child: Padding(
+              child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
 
                       // Title
                       Text(
-                        'Đăng nhập',
+                        'Tạo tài khoản',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -135,13 +147,45 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
 
                       // Subtitle
                       Text(
-                        'Chào mừng trở lại! Đăng nhập để tiếp tục.',
+                        'Hãy bắt đầu, hoàn toàn miễn phí!',
                         style: TextStyle(
                           fontSize: 16,
                           color: AppColors.textSecondary,
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 20),
+
+                      // Name field
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.person_outline,
+                            color: AppColors.textSecondary,
+                          ),
+                          hintText: 'Họ và tên',
+                          filled: true,
+                          fillColor: AppColors.greyLight.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng nhập họ và tên';
+                          }
+                          if (value.length < 2) {
+                            return 'Tên phải có ít nhất 2 ký tự';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
 
                       // Email field
                       TextFormField(
@@ -176,7 +220,7 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
                       // Password field
                       TextFormField(
@@ -222,9 +266,103 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 10),
 
-                      // Login button with loading state
+                      // Confirm Password field
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: _obscureConfirmPassword,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: AppColors.textSecondary,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirmPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: AppColors.textSecondary,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureConfirmPassword =
+                                    !_obscureConfirmPassword;
+                              });
+                            },
+                          ),
+                          hintText: 'Xác nhận mật khẩu',
+                          filled: true,
+                          fillColor: AppColors.greyLight.withOpacity(0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 16,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Vui lòng xác nhận mật khẩu';
+                          }
+                          if (value != _passwordController.text) {
+                            return 'Mật khẩu xác nhận không khớp';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Terms and conditions
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: _acceptTerms,
+                            onChanged: (value) {
+                              setState(() {
+                                _acceptTerms = value ?? false;
+                              });
+                            },
+                            activeColor: AppColors.primary,
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: RichText(
+                                text: TextSpan(
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  children: [
+                                    const TextSpan(text: 'Tôi đồng ý với '),
+                                    TextSpan(
+                                      text: 'Điều khoản dịch vụ',
+                                      style: TextStyle(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const TextSpan(text: ' và '),
+                                    TextSpan(
+                                      text: 'Chính sách bảo mật',
+                                      style: TextStyle(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Register button with loading state
                       BlocBuilder<AuthBloc, AuthState>(
                         builder: (context, state) {
                           final isLoading = state is AuthLoading;
@@ -233,7 +371,7 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                             width: double.infinity,
                             height: 56,
                             child: ElevatedButton(
-                              onPressed: isLoading ? null : _handleEmailLogin,
+                              onPressed: isLoading ? null : _handleRegister,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
@@ -255,7 +393,7 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                                       ),
                                     )
                                   : const Text(
-                                      'Đăng nhập',
+                                      'Đăng ký',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -265,91 +403,22 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                           );
                         },
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
 
-                      // Divider
-                      Row(
-                        children: [
-                          Expanded(child: Divider(color: AppColors.greyLight)),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              'hoặc',
-                              style: TextStyle(color: AppColors.textSecondary),
-                            ),
-                          ),
-                          Expanded(child: Divider(color: AppColors.greyLight)),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Google login button
-                      BlocBuilder<AuthBloc, AuthState>(
-                        builder: (context, state) {
-                          final isLoading = state is AuthLoading;
-
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: OutlinedButton.icon(
-                              onPressed: isLoading ? null : _handleGoogleLogin,
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: AppColors.greyLight),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              icon: isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Image.asset(
-                                      'assets/images/google_logo.png',
-                                      width: 20,
-                                      height: 20,
-                                      errorBuilder:
-                                          (context, error, stackTrace) => Icon(
-                                            Icons.g_mobiledata,
-                                            color: AppColors.primary,
-                                          ),
-                                    ),
-                              label: Text(
-                                'Đăng nhập với Google',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-
-                      const Spacer(),
-
-                      // Register link
+                      // Login link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Chưa có tài khoản? ',
+                            'Đã có tài khoản? ',
                             style: TextStyle(color: AppColors.textSecondary),
                           ),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RegisterScreen(),
-                                ),
-                              );
+                              Navigator.pop(context);
                             },
                             child: Text(
-                              'Đăng ký',
+                              'Đăng nhập',
                               style: TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
@@ -358,7 +427,7 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),

@@ -184,8 +184,6 @@ class HomeScreen extends StatelessWidget {
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: state.categories.map((c) {
-                                final selected =
-                                    state.selectedCategory?.name == c.name;
                                 return GestureDetector(
                                   onTap: () {
                                     print("=> Category tapped: ${c.name}");
