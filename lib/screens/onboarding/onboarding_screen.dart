@@ -98,26 +98,23 @@ class _OnboardingScreenContentState extends State<_OnboardingScreenContent> {
             return SafeArea(
               child: Column(
                 children: [
-                  // Skip button
-                  if (!state.isLastPage)
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: TextButton(
-                          onPressed: _skip,
-                          child: Text(
-                            'Bỏ qua',
-                            style: TextStyle(
-                              color: AppColors.textSecondary,
-                              fontSize: 16,
-                            ),
+                  // Skip button - hiển thị ở tất cả các trang
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextButton(
+                        onPressed: _skip,
+                        child: Text(
+                          'Bỏ qua',
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 16,
                           ),
                         ),
                       ),
-                    )
-                  else
-                    const SizedBox(height: 36),
+                    ),
+                  ),
 
                   // Page content
                   Expanded(
