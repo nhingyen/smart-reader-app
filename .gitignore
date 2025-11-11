@@ -45,6 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Firebase configuration files (contains sensitive information)
+# Copy from .example files and update with your values
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
-firebase_options.dart
+lib/firebase_options.dart
