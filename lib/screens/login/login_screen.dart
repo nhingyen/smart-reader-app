@@ -308,7 +308,7 @@ class _LoginScreenContentState extends State<_LoginScreenContent> {
                                       ),
                                     )
                                   : Image.asset(
-                                      'assets/images/google_logo.png',
+                                      'assets/images/google_logo1.png',
                                       width: 20,
                                       height: 20,
                                       errorBuilder:

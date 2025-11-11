@@ -4,6 +4,7 @@ import 'package:smart_reader/screens/home/home_screen.dart';
 import 'package:smart_reader/screens/onboarding/onboarding_screen.dart';
 import 'package:smart_reader/screens/login/login_screen.dart';
 import 'package:smart_reader/screens/startup/app_startup_screen.dart';
+import 'package:smart_reader/screens/profile/profile_screen.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_bloc.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_event.dart';
 import 'package:smart_reader/theme/app_colors.dart';
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
           '/onboarding': (context) => const OnboardingScreen(),
           '/login': (context) => const LoginScreen(),
           '/home': (context) => const HomeScreen(),
+          '/profile': (context) => const ProfileScreen(),
         },
       ),
     );
