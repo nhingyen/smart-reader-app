@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:smart_reader/models/author.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
@@ -8,7 +7,7 @@ abstract class HomeState extends Equatable {
   const HomeState();
 
   @override
-  List<Object?> props() => [];
+  List<Object?> get props => [];
 }
 
 class HomeInitial extends HomeState {}
@@ -23,7 +22,7 @@ class HomeLoaded extends HomeState {
   final List<BookCategory> categories;
   final BookCategory? selectedCategory;
 
-  HomeLoaded({
+  const HomeLoaded({
     required this.continueReading,
     required this.authors,
     required this.newBooks,
@@ -33,7 +32,7 @@ class HomeLoaded extends HomeState {
   });
 
   @override
-  List<Object?> props() => [
+  List<Object?> get props => [
     categories,
     continueReading,
     authors,
@@ -48,5 +47,5 @@ class HomeError extends HomeState {
   const HomeError(this.message);
 
   @override
-  List<Object?> props() => [message];
+  List<Object?> get props => [message];
 }

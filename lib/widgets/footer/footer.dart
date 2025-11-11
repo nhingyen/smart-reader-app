@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_reader/screens/home/home_screen.dart';
+import 'package:smart_reader/screens/profile/profile_screen.dart';
 import 'package:smart_reader/widgets/footer/footer_item.dart';
 
 class CustomFooter extends StatefulWidget {
@@ -18,12 +19,19 @@ class CustomFooter extends StatefulWidget {
 }
 
 class _CustomFooterState extends State<CustomFooter> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    widget.onItemSelected(index);
     switch (index) {
       case 0:
         Navigator.pushReplacement(
@@ -42,6 +50,13 @@ class _CustomFooterState extends State<CustomFooter> {
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
+        break;
+      case 3:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ProfileScreen()),
+        );
+        break;
     }
   }
 
@@ -77,8 +92,8 @@ class _CustomFooterState extends State<CustomFooter> {
           FooterItem(
             icon: Icons.person_outlined,
             label: 'Bạn đọc',
-            onTap: () => _onItemTapped(2),
-            isSelected: _selectedIndex == 2,
+            onTap: () => _onItemTapped(3),
+            isSelected: _selectedIndex == 3,
           ),
         ],
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_reader/models/categories.dart';
+// import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
 import 'package:smart_reader/screens/category/category_screen.dart';
@@ -184,14 +184,9 @@ class HomeScreen extends StatelessWidget {
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: state.categories.map((c) {
-                                final selected =
-                                    state.selectedCategory?.categoryName ==
-                                    c.categoryName;
                                 return GestureDetector(
                                   onTap: () {
-                                    print(
-                                      "=> Category tapped: ${c.categoryName}",
-                                    );
+                                    print("=> Category tapped: ${c.name}");
                                     context.read<HomeBloc>().add(
                                       CategorySelectedEvent(c),
                                     );
@@ -216,7 +211,7 @@ class HomeScreen extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
-                                      c.categoryName,
+                                      c.name,
                                       style: TextStyle(
                                         color: AppColors.textLight,
                                         fontWeight: FontWeight.w600,
@@ -337,7 +332,7 @@ class HomeScreen extends StatelessWidget {
                                 bookId: c.bookId,
                                 imgUrl: c.imgUrl,
                                 title: c.title,
-                                author: c.author.authorName,
+                                author: c.authorName,
                                 rating: c.rating,
                               );
                             }).toList(),
@@ -373,7 +368,7 @@ class HomeScreen extends StatelessWidget {
                                   bookId: d.bookId,
                                   imgUrl: d.imgUrl,
                                   title: d.title,
-                                  author: d.author.authorName,
+                                  author: d.authorName,
                                   rating: d.rating,
                                   onTap: () {
                                     Navigator.push(
