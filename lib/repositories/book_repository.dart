@@ -8,7 +8,15 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class BookRepository {
-  static final String _baseUrl = dotenv.env['baseURL']!;
+  // Sửa thành static GETTER
+  static String get _baseUrl {
+    final url = dotenv.env['baseURL'];
+    if (url == null) {
+      // Báo lỗi rõ ràng hơn nếu .env bị thiếu
+      throw Exception("Lỗi: Không tìm thấy 'baseURL' trong file .env");
+    }
+    return url;
+  }
   // 3. Dùng cho Điện thoại thật (CẮM CÁP hoặc CÙNG WIFI):
   // (Thay 192.168.1.5 bằng IP Wifi của MÁY TÍNH bạn)
   // static const String _baseUrl = "http://192.168.1.5:5001";

@@ -10,6 +10,7 @@ import 'package:smart_reader/screens/auth/bloc/auth_event.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +24,7 @@ void main() async {
     print('❌ Firebase initialization failed: $e');
     // App vẫn chạy được mà không cần Firebase trong development
   }
-
+  await dotenv.load(fileName: ".env");
   runApp(MyApp());
 }
 
