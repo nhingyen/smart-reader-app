@@ -7,7 +7,7 @@ abstract class HomeState extends Equatable {
   const HomeState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> props() => [];
 }
 
 class HomeInitial extends HomeState {}
@@ -32,7 +32,7 @@ class HomeLoaded extends HomeState {
   });
 
   @override
-  List<Object?> get props => [
+  List<Object?> props() => [
     categories,
     continueReading,
     authors,
@@ -47,5 +47,5 @@ class HomeError extends HomeState {
   const HomeError(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> props() => [message];
 }

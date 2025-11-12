@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class ProfileState extends Equatable {
   @override
-  List<Object?> get props => [];
+  List<Object?> props() => [];
 }
 
 class ProfileInitial extends ProfileState {}
@@ -42,7 +42,7 @@ class ProfileLoaded extends ProfileState {
   }
 
   @override
-  List<Object?> get props => [user, booksRead, dayStreak, timeRead, userTitle];
+  List<Object?> props() => [user, booksRead, dayStreak, timeRead, userTitle];
 }
 
 class ProfileError extends ProfileState {
@@ -51,5 +51,5 @@ class ProfileError extends ProfileState {
   ProfileError(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> props() => [message];
 }

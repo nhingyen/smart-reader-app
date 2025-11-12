@@ -5,7 +5,7 @@ abstract class BookDetailState extends Equatable {
   const BookDetailState();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> props() => [];
 }
 
 class BookDetailInitial extends BookDetailState {}
@@ -18,7 +18,7 @@ class BookDetailLoaded extends BookDetailState {
   const BookDetailLoaded({required this.book});
 
   @override
-  List<Object?> get props => [book];
+  List<Object?> props() => [book];
 }
 
 class BookDetailError extends BookDetailState {
@@ -27,5 +27,5 @@ class BookDetailError extends BookDetailState {
   const BookDetailError({required this.message});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> props() => [message];
 }
