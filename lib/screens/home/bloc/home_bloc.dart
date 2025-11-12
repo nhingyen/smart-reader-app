@@ -1,9 +1,4 @@
-// import 'dart:math';
-// import 'package:flutter/foundation.dart' hide Category;
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:smart_reader/models/author.dart';
-// import 'package:smart_reader/models/book.dart';
-import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';

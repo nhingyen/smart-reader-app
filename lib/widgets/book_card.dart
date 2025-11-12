@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_reader/theme/app_colors.dart';
 
 class BookCard extends StatelessWidget {
   final String bookId;
@@ -36,7 +37,11 @@ class BookCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               title,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textDark,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

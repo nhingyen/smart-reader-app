@@ -55,6 +55,7 @@ class ListCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 15,
+                      color: AppColors.textDark,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
