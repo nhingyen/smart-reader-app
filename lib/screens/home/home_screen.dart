@@ -155,6 +155,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
@@ -199,9 +200,7 @@ class HomeScreen extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            CategoryDetailScreen(
-                                              category: c,
-                                            ), // Thêm tạm trang Home trước đã
+                                            CategoryDetailScreen(category: c),
                                       ),
                                     );
                                   },
@@ -235,6 +234,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
@@ -281,6 +281,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
@@ -317,6 +318,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
@@ -350,6 +352,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(

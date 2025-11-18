@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:smart_reader/models/author.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
@@ -23,7 +22,7 @@ class HomeLoaded extends HomeState {
   final List<BookCategory> categories;
   final BookCategory? selectedCategory;
 
-  HomeLoaded({
+  const HomeLoaded({
     required this.continueReading,
     required this.authors,
     required this.newBooks,

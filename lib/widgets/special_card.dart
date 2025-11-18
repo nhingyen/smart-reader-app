@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 class SpecialCard extends StatelessWidget {
   final String bookId;
   final String imgUrl;
@@ -64,6 +66,7 @@ class SpecialCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w500,
+                        color: AppColors.textDark,
                       ),
                     ),
                     Text(

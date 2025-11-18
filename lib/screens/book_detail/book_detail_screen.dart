@@ -247,7 +247,7 @@ class BookDetailScreen extends StatelessWidget {
                   children: [
                     Text(
                       book.rating.toString(),
-                      style: TextStyle(fontSize: 13),
+                      style: TextStyle(fontSize: 13, color: AppColors.textDark),
                     ),
                     const SizedBox(width: 4),
                     const Icon(
@@ -259,7 +259,7 @@ class BookDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   "${book.chapterCount.toInt()} Chương",
-                  style: TextStyle(fontSize: 13),
+                  style: TextStyle(fontSize: 13, color: AppColors.textDark),
                 ),
                 // Thêm rating và thống kê ở đây
               ],
@@ -285,7 +285,11 @@ class BookSynopsisTab extends StatelessWidget {
         children: [
           Text(
             "Tóm tắt nội dung sách",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textDark,
+            ),
           ),
           const SizedBox(height: 8),
           Text(book.description, style: TextStyle(color: Colors.black54)),

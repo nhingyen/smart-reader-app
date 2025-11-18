@@ -15,7 +15,7 @@ class BookDetailLoading extends BookDetailState {}
 class BookDetailLoaded extends BookDetailState {
   final Book book;
 
-  BookDetailLoaded({required this.book});
+  const BookDetailLoaded({required this.book});
 
   @override
   List<Object?> props() => [book];
@@ -24,7 +24,7 @@ class BookDetailLoaded extends BookDetailState {
 class BookDetailError extends BookDetailState {
   final String message;
 
-  BookDetailError({required this.message});
+  const BookDetailError({required this.message});
 
   @override
   List<Object?> props() => [message];
