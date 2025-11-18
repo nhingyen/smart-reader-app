@@ -119,31 +119,31 @@ flutter run
 📸 Screenshots
 
 <div style="display: flex; justify-content: space-between;">
-<img src="lib/screenshots/intro1.jpg" width="32%" alt="" />
-<img src="lib/screenshots/intro2.jpg" width="32%" alt="" />
-<img src="lib/screenshots/intro3.jpg" width="32%" alt="" />
+<img src="assets/screenshots/intro1.jpg" width="32%" alt="" />
+<img src="assets/screenshots/intro2.jpg" width="32%" alt="" />
+<img src="assets/screenshots/intro3.jpg" width="32%" alt="" />
 </div>
 
 <div style="display: flex; justify-content: space-between;">
-<img src="lib/screenshots/login.jpg" width="32%" alt="" />
-<img src="lib/screenshots/register.jpg" width="32%" alt="" />
-<img src="lib/screenshots/home1.jpg" width="32%" alt="" />
+<img src="assets/screenshots/login.jpg" width="32%" alt="" />
+<img src="assets/screenshots/register.jpg" width="32%" alt="" />
+<img src="assets/screenshots/home1.jpg" width="32%" alt="" />
 </div>
 
 <div style="display: flex; justify-content: space-between;">
-<img src="lib/screenshots/home2.jpg" width="32%" alt="" />
-<img src="lib/screenshots/categories.jpg" width="32%" alt="" />
-<img src="lib/screenshots/detail_cate.jpg" width="32%" alt="" />
+<img src="assets/screenshots/home2.jpg" width="32%" alt="" />
+<img src="assets/screenshots/categories.jpg" width="32%" alt="" />
+<img src="assets/screenshots/detail_cate.jpg" width="32%" alt="" />
 </div>
 
 <div style="display: flex; justify-content: space-between;">
-<img src="lib/screenshots/home2.jpg" width="32%" alt="" />
-<img src="lib/screenshots/categories.jpg" width="32%" alt="" />
-<img src="lib/screenshots/detail_cate.jpg" width="32%" alt="" />
+<img src="assets/screenshots/home2.jpg" width="32%" alt="" />
+<img src="assets/screenshots/categories.jpg" width="32%" alt="" />
+<img src="assets/screenshots/detail_cate.jpg" width="32%" alt="" />
 </div>
 
 <div style="display: flex; justify-content: space-between;">
-<img src="lib/screenshots/detail1.jpg" width="32%" alt="" />
-<img src="lib/screenshots/detail2.jpg" width="32%" alt="" />
-<img src="lib/screenshots/read.jpg" width="32%" alt="" />
+<img src="assets/screenshots/detail1.jpg" width="32%" alt="" />
+<img src="assets/screenshots/detail2.jpg" width="32%" alt="" />
+<img src="assets/screenshots/read.jpg" width="32%" alt="" />
 </div>
