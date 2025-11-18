@@ -1,122 +1,92 @@
-📚 SmartBook App
+# SmartBook App
 
 SmartBook App is a smart book reading and listening application designed to provide a seamless experience for discovering, reading, and listening to books. The project is built with a complete Client-Server architecture using Flutter (Frontend) and Node.js (Backend).
 
-🚀 Key Features
+## Features
 
-🏠 Home Screen
+Home Screen:
 
-Discovery: Displays latest books, featured books (based on ratings), and top authors.
+- Discovery: Displays latest books, featured books (based on ratings), and top authors.
 
-Categorization: Filter books by categories (Self-help, Business, Literature, etc.).
+- Categorization: Filter books by categories (Self-help, Business, Literature, etc.).
+  Book Detail:
 
-📖 Book Detail
+- Detailed Info: View comprehensive book details (author, description, rating).
 
-Info: View comprehensive book details (author, description, rating).
+- Chapter List: Easy access to all chapters.
 
-Chapter List: Easy access to all chapters.
+- Quick Start: "Read Now" button automatically opens the first chapter.
 
-Quick Start: "Read Now" button automatically opens the first chapter.
+Book Reader:
 
-👓 Book Reader
+- Rich Text Rendering: Displays chapter content in HTML format for better typography.
 
-Rich Text Rendering: Displays chapter content in HTML format for better typography.
+- Smart Navigation: Switch between chapters (Previous/Next) directly from the reading screen.
 
-Smart Navigation: Switch between chapters (Previous/Next) directly from the reading screen.
+- Utility Toolbar: Audio player, Summary view, and AI Chat integration (UI).
 
-Utility Toolbar: Audio player, Summary view, and AI Chat integration (UI).
+## Tech Stack
 
-🛠 Tech Stack
+- **Mobile App (Frontend)**:
 
-📱 Mobile App (Frontend)
+  - Framework: Flutter (Cross-platform UI)
 
-Technology
+  - State Management: BLoC Pattern (Separating UI & Logic)
 
-Description
+  - Networking: Http (RESTful API calls)
 
-Flutter
+  - Utilities: Flutter Dotenv (Env variables), Flutter Widget from HTML (Rich text rendering)
 
-Main framework for building cross-platform UI.
+- **Backend Server**:
 
-BLoC Pattern
+  - Core: Node.js & Express (RESTful API)
+  - Database: MongoDB & Mongoose (NoSQL for Books,Chapters, Authors), Firebase Autheilities: Flutter Dotenv (Env variables), Flutter Widget from HTML (Rich text rendering)
 
-Professional State Management, separating UI and Logic.
+  - **Backend Server**:
+    - Core: Node.js & Express (RESTful API)
+      - Database: MongoDB & Mongoose (NoSQL for Books,Chapters, Authors), Firebase Authentication
+  - Security: Cors (Cross-Origin Resource Sharing)
 
-Http
+## Installation
 
-For making RESTful API calls to the backend.
+1.  Backend (Server)
 
-Flutter Dotenv
-
-Managing environment variables securely.
-
-Flutter Widget from HTML
-
-Rendering rich book content from HTML strings.
-
-🔙 Backend Server
-
-Technology
-
-Description
-
-Node.js & Express
-
-Building the RESTful API.
-
-MongoDB & Mongoose
-
-NoSQL database for storing Books, Chapters, Authors.
-
-Cors
-
-Handling Cross-Origin Resource Sharing security.
-
-⚙️ Installation & Setup Guide
-
-1. Backend (Server)
-
+```bash
 # 1. Navigate to the backend directory
-
 cd smartbook-backend
 
 # 2. Install dependencies
-
 npm install
 
-# 3. Create .env file in the root of backend and add:
-
+# 3. Configure environment variables
+# Create a .env file and add:
 # MONGO_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/smartbook?retryWrites=true&w=majority
-
 # PORT=5001
 
 # 4. Start the server
-
 npm run dev
+```
 
-Server will run at: http://localhost:5001 (or your LAN IP).
+The server will run at: http://localhost:5001 (or your LAN IP address).
 
-2. Mobile App (Flutter)
+2.  Mobile App (Flutter)
 
+```bash
 # 1. Navigate to the app directory
-
 cd smart_reader_app
 
 # 2. Install dependencies
-
 flutter pub get
 
-# 3. Create .env file in the root of Flutter app:
-
-# baseURL=http://YOUR_IP_ADDRESS:5001
-
-# (Example: baseURL=[http://192.168.1.5:5001](http://192.168.1.5:5001))
+# 3. Configure environment variables
+# Create a .env file in the root directory and add your computer's IP:
+# baseURL=[http://192.168.1.](http://192.168.1.)x:5001
 
 # 4. Run the app
-
 flutter run
+```
 
-📸 Screenshots
+## Screenshots
 
 <div style="display: flex; justify-content: space-between;">
 <img src="assets/screenshots/intro1.jpg" width="32%" alt="" />
