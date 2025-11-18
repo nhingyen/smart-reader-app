@@ -127,17 +127,15 @@ flutter run
 <div style="display: flex; justify-content: space-between;">
 <img src="assets/screenshots/login.jpg" width="32%" alt="" />
 <img src="assets/screenshots/register.jpg" width="32%" alt="" />
-<img src="assets/screenshots/home1.jpg" width="32%" alt="" />
 </div>
 
 <div style="display: flex; justify-content: space-between;">
-<img src="assets/screenshots/home2.jpg" width="32%" alt="" />
+<img src="assets/screenshots/home1.jpg" width="32%" alt="" />
 <img src="assets/screenshots/categories.jpg" width="32%" alt="" />
 <img src="assets/screenshots/detail_cate.jpg" width="32%" alt="" />
 </div>
 
 <div style="display: flex; justify-content: space-between;">
-<img src="assets/screenshots/home2.jpg" width="32%" alt="" />
 <img src="assets/screenshots/categories.jpg" width="32%" alt="" />
 <img src="assets/screenshots/detail_cate.jpg" width="32%" alt="" />
 </div>
