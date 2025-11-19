@@ -40,11 +40,7 @@ Book Reader:
 - **Backend Server**:
 
   - Core: Node.js & Express (RESTful API)
-  - Database: MongoDB & Mongoose (NoSQL for Books,Chapters, Authors), Firebase Autheilities: Flutter Dotenv (Env variables), Flutter Widget from HTML (Rich text rendering)
-
-  - **Backend Server**:
-    - Core: Node.js & Express (RESTful API)
-      - Database: MongoDB & Mongoose (NoSQL for Books,Chapters, Authors), Firebase Authentication
+  - Database: MongoDB & Mongoose (NoSQL for Books,Chapters, Authors), Firebase Authentication
   - Security: Cors (Cross-Origin Resource Sharing)
 
 ## Installation
