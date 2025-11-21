@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
+import 'package:smart_reader/screens/book_list/book_list_screen.dart';
 import 'package:smart_reader/screens/category/category_screen.dart';
 import 'package:smart_reader/screens/category_detail/category_detail_screen.dart';
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
@@ -163,8 +165,7 @@ class HomeScreen extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          CategoryScreen(), // Thêm tạm trang Home trước đã
+                                      builder: (context) => CategoryScreen(),
                                     ),
                                   );
                                 },
@@ -322,7 +323,17 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               ),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookListScreen(
+                                        title: "Sách mới",
+                                        books: state.newBooks,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
                                   "Xem tất cả",
                                   style: TextStyle(
@@ -356,7 +367,17 @@ class HomeScreen extends StatelessWidget {
                                 ),
                               ),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookListScreen(
+                                        title: "Sách đặc biệt",
+                                        books: state.specialBooks,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
                                   "Xem tất cả",
                                   style: TextStyle(
