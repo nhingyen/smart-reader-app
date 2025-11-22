@@ -102,8 +102,8 @@ flutter run
 </div>
 
 <div style="display: flex; justify-content: space-between;">
-<img src="assets/screenshots/categories.jpg" width="32%" alt="" />
-<img src="assets/screenshots/detail_cate.jpg" width="32%" alt="" />
+<img src="assets/screenshots/detail_new_speacial.jpg" width="32%" alt="" />
+<img src="assets/screenshots/detail_author.jpg" width="32%" alt="" />
 </div>
 
 <div style="display: flex; justify-content: space-between;">

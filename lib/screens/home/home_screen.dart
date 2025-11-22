@@ -10,6 +10,7 @@ import 'package:smart_reader/screens/category_detail/category_detail_screen.dart
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
+import 'package:smart_reader/screens/author_detail/author_detail_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/author_avatar.dart';
 import 'package:smart_reader/widgets/book_card.dart';
@@ -305,7 +306,17 @@ class HomeScreen extends StatelessWidget {
                                 return AuthorAvatar(
                                   name: a.authorName,
                                   avatarUrl: a.avatarUrl,
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AuthorDetailScreen(
+                                              authorId: a.authorId,
+                                            ),
+                                      ),
+                                    );
+                                  },
                                 );
                               }).toList(),
                             ),

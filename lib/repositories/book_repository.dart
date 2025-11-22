@@ -74,7 +74,7 @@ class BookRepository {
 
   //Lấy dữ liệu tổng hợp cho Home
   Future<Map<String, dynamic>> fetchHomeData() async {
-    print('EPOSITORY: Fetching all data for Home Screen');
+    print('REPOSITORY: Fetching all data for Home Screen');
     final response = await http.get(Uri.parse('$_baseUrl/api/home'));
     final data = _handleResponse(response);
 
@@ -102,5 +102,27 @@ class BookRepository {
       'specialBooks': specialBooks,
       'continueReading': <Book>[],
     };
+  }
+
+  //Lấy chi tiết tác giả
+  Future<Map<String, dynamic>> fetchAuthorDetails(String authorId) async {
+    print('REPOSITORY: Fetching author details for: $authorId');
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/authors/$authorId'),
+    );
+    print("RESPONSE RAW: ${response.body}");
+    final data = _handleResponse(response);
+    // 1️⃣ Parse author
+    final author = Author.fromJson(data['author']);
+
+    // 2️⃣ Parse books
+    List<Book> books = [];
+    if (data['books'] != null) {
+      books = (data['books'] as List)
+          .map((item) => Book.fromJson(item))
+          .toList();
+    }
+
+    return {'author': author, 'books': books};
   }
 }
