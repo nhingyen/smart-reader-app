@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/reading_progess.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/repositories/user_repository.dart';
@@ -17,9 +18,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<LoadHomeDataEvent>((event, emit) async {
       emit(HomeLoading());
       try {
-        // --- GIAI ĐOẠN 1: ĐI CHỢ (GỌI API) ---
-
-        // Ông BookRepo đi lấy sách chung (Không cần userId nữa)
+        // BookRepo đi lấy sách chung (Không cần userId nữa)
         final bookTask = bookRepository.fetchHomeData();
 
         // Ông UserRepo đi lấy tiến độ (Chỉ đi nếu có userId)
@@ -30,17 +29,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           userTask = Future.value([]); // Không có user thì xách giỏ không về
         }
 
+        Future<List<Book>> libFuture = (event.userId != null)
+            ? userRepository.fetchLibrary(event.userId!)
+            : Future.value([]);
+
         // Chờ 2 ông cùng về (Chạy song song cho nhanh)
-        final results = await Future.wait([bookTask, userTask]);
+        final results = await Future.wait([bookTask, userTask, libFuture]);
+
+        final libraryBooks = results[2] as List<Book>;
 
         // Bóc tách dữ liệu
         final homeData = results[0] as Map<String, dynamic>; // Rau củ
         final readingProgress = results[1] as List<ReadingProgress>; // Thịt thà
 
-        // --- GIAI ĐOẠN 2: CHẾ BIẾN (EMIT STATE) ---
+        // ---CHẾ BIẾN (EMIT STATE) ---
         emit(
           HomeLoaded(
             readingProgress: readingProgress, // Lấy từ UserRepo
+            libraryBooks: libraryBooks,
             authors: homeData['authors'], // Lấy từ BookRepo
             newBooks: homeData['newBooks'], // Lấy từ BookRepo
             specialBooks: homeData['specialBooks'],

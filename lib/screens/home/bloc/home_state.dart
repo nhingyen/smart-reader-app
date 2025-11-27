@@ -17,6 +17,7 @@ class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
   final List<ReadingProgress> readingProgress;
+  final List<Book> libraryBooks;
   final List<Author> authors;
   final List<Book> newBooks;
   final List<Book> specialBooks;
@@ -25,6 +26,7 @@ class HomeLoaded extends HomeState {
 
   const HomeLoaded({
     required this.readingProgress,
+    this.libraryBooks = const [],
     required this.authors,
     required this.newBooks,
     required this.specialBooks,

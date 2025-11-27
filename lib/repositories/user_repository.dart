@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/reading_progess.dart';
 
 class UserRepository {
@@ -63,6 +64,54 @@ class UserRepository {
       }
     } catch (e) {
       print("❌ Lỗi kết nối khi lưu tiến độ: $e");
+    }
+  }
+
+  // 1. Hàm Thêm/Xóa
+  Future<bool> toggleLibrary(String userId, String bookId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/library/toggle'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"userId": userId, "bookId": bookId}),
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body)['isAdded'];
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // 2. Hàm Lấy danh sách (Cho Home)
+  Future<List<Book>> fetchLibrary(String userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/library?userId=$userId'),
+      );
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+        return data.map((json) => Book.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // 3. Hàm kiểm tra trạng thái ban đầu
+  Future<bool> checkIsAdded(String userId, String bookId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/library/check?userId=$userId&bookId=$bookId'),
+      );
+      if (response.statusCode == 200) {
+        return json.decode(response.body)['isAdded'];
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 }

@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                           ),
 
-                          SizedBox(height: 5),
+                          // SizedBox(height: 2),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -511,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
             } else if (state is HomeError) {
               return Center(child: Text(state.message));
             }
-            return Center(child: Text("Chưa có dữ liệu"));
+            return const SizedBox.shrink();
           },
         ),
         bottomNavigationBar: CustomFooter(

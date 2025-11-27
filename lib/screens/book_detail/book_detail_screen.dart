@@ -1,20 +1,83 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/chapter_info.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
+import 'package:smart_reader/repositories/user_repository.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_bloc.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_event.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_state.dart';
+import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
+import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/reader/reader_sceen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/buttons.dart';
 // ... import các file BLoC và Repository của bạn
 
-class BookDetailScreen extends StatelessWidget {
+class BookDetailScreen extends StatefulWidget {
   final String bookId;
 
   const BookDetailScreen({super.key, required this.bookId});
+  @override
+  State<BookDetailScreen> createState() => _BookDetailScreenState();
+}
+
+class _BookDetailScreenState extends State<BookDetailScreen> {
+  bool isAdded = false; // Trạng thái nút bấm
+  final user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkStatus();
+  }
+
+  // Kiểm tra xem sách đã có trong thư viện chưa để hiện đúng màu nút
+  void _checkStatus() async {
+    if (user != null) {
+      final status = await context.read<UserRepository>().checkIsAdded(
+        user!.uid,
+        widget.bookId,
+      );
+      setState(() {
+        isAdded = status;
+      });
+    }
+  }
+
+  // Hàm xử lý khi bấm nút
+  void _onToggleLibrary() async {
+    if (user == null) {
+      // Show dialog bắt đăng nhập
+      return;
+    }
+
+    // 1. Gọi API
+    final newStatus = await context.read<UserRepository>().toggleLibrary(
+      user!.uid,
+      widget.bookId,
+    );
+
+    // 2. Cập nhật UI nút bấm
+    setState(() {
+      isAdded = newStatus;
+    });
+
+    // 3. Quan trọng: Reload lại dữ liệu trang Home để danh sách cập nhật
+    if (context.mounted) {
+      context.read<HomeBloc>().add(LoadHomeDataEvent(userId: user!.uid));
+    }
+
+    // 4. Thông báo nhỏ
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          newStatus ? "Đã thêm vào thư viện" : "Đã xóa khỏi thư viện",
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +85,7 @@ class BookDetailScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) =>
           BookDetailBloc(repository: BookRepository())
-            ..add(LoadBookDetailEvent(bookId: bookId)),
+            ..add(LoadBookDetailEvent(bookId: widget.bookId)),
       child: Scaffold(
         body: BlocBuilder<BookDetailBloc, BookDetailState>(
           builder: (context, state) {
@@ -139,7 +202,7 @@ class BookDetailScreen extends StatelessWidget {
 
   Widget _buildActionButtons(BuildContext context, Book book) {
     // Lấy trạng thái của nút Add to Library
-    final bool isAdded = book.isAddedToLibrary;
+    // final bool isAdded = book.isAddedToLibrary;
 
     return Column(
       children: [
@@ -192,10 +255,44 @@ class BookDetailScreen extends StatelessWidget {
         // Hàng 2:
         Row(
           children: [
-            ListButtons(
-              isAdded ? "Đã thêm vào" : "Thêm thư viện",
-              isAdded ? Icons.check : Icons.add,
-              () {},
+            // Thay thế ListButtons cũ bằng Expanded + OutlinedButton để giống thiết kế
+            Expanded(
+              child: SizedBox(
+                height: 42, // Chiều cao cho bằng nút bên cạnh
+                child: OutlinedButton.icon(
+                  // 3. GẮN HÀM XỬ LÝ VÀO ĐÂY
+                  onPressed: _onToggleLibrary,
+
+                  // Icon thay đổi theo trạng thái
+                  icon: Icon(
+                    isAdded ? Icons.check : Icons.add,
+                    color: isAdded
+                        ? AppColors.primary
+                        : const Color(0xFF28C7A0),
+                  ),
+
+                  // Chữ thay đổi theo trạng thái
+                  label: Text(
+                    isAdded ? "Đã thêm" : "Thêm thư viện",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: isAdded ? AppColors.primary : AppColors.primary,
+                    ),
+                  ),
+
+                  // Style viền
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: isAdded ? AppColors.primary : AppColors.primary,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             ListButtons("Đánh giá", Icons.edit, () {}),
