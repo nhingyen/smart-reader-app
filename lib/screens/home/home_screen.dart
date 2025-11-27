@@ -14,6 +14,7 @@ import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
 import 'package:smart_reader/screens/author_detail/author_detail_screen.dart';
 import 'package:smart_reader/screens/reader/reader_sceen.dart';
+import 'package:smart_reader/screens/search/search_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/author_avatar.dart';
 import 'package:smart_reader/widgets/continue_reading_card.dart';
@@ -131,7 +132,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.black,
                         size: 22,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SearchScreen(),
+                          ),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: const Icon(

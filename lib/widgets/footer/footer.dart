@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_reader/screens/home/home_screen.dart';
 import 'package:smart_reader/screens/library/library_screen.dart';
 import 'package:smart_reader/screens/profile/profile_screen.dart';
+import 'package:smart_reader/screens/search/search_screen.dart';
 import 'package:smart_reader/widgets/footer/footer_item.dart';
 
 class CustomFooter extends StatefulWidget {
@@ -44,7 +44,10 @@ class _CustomFooterState extends State<CustomFooter> {
         break;
 
       case 1: // Tìm kiếm
-        // TODO: Navigate to SearchScreen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SearchScreen()),
+        );
         break;
 
       case 2: // Thư viện (Yêu thích)

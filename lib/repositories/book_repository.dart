@@ -124,4 +124,20 @@ class BookRepository {
 
     return {'author': author, 'books': books};
   }
+
+  // Hàm tìm kiếm sách
+  Future<List<Book>> searchBooks(String query) async {
+    try {
+      print('🔎 Searching for: $query');
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/books/search?q=$query'),
+      );
+
+      final data = _handleResponse(response) as List;
+      return data.map((json) => Book.fromJson(json)).toList();
+    } catch (e) {
+      print("Lỗi searchBooks: $e");
+      return []; // Trả về rỗng nếu lỗi
+    }
+  }
 }
