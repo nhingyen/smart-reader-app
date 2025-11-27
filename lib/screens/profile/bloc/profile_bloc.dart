@@ -1,16 +1,21 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:smart_reader/repositories/user_repository.dart'; // Import Repo
 import 'profile_event.dart';
 import 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final UserRepository _userRepository; // 1. Khai báo Repository
 
-  ProfileBloc() : super(ProfileInitial()) {
+  // 2. Yêu cầu truyền Repository vào Constructor
+  ProfileBloc({required UserRepository userRepository})
+      : _userRepository = userRepository,
+        super(ProfileInitial()) {
     on<LoadUserProfileEvent>(_onLoadUserProfile);
-    on<UpdateReadingStatsEvent>(_onUpdateReadingStats);
     on<UpdateUserInfoEvent>(_onUpdateUserInfo);
     on<LogoutUserEvent>(_onLogoutUser);
+    // on<UpdateReadingStatsEvent>(_onUpdateReadingStats); // Tạm bỏ cái này, reload lại profile là tự cập nhật
   }
 
   Future<void> _onLoadUserProfile(
@@ -22,19 +27,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       final user = _firebaseAuth.currentUser;
       if (user != null) {
-        // Load user profile data
-        // In a real app, you would fetch this from a database
-        await Future.delayed(
-          const Duration(milliseconds: 500),
-        ); // Simulate loading
+        // --- 3. LẤY DỮ LIỆU THẬT TỪ MONGODB ---
+        // Gọi hàm fetchUserStats mà chúng ta vừa viết ở bước trước
+        final stats = await _userRepository.fetchUserStats(user.uid);
 
         emit(
           ProfileLoaded(
             user: user,
-            booksRead: 24,
-            dayStreak: 7,
-            timeRead: 42,
-            userTitle: 'Book Enthusiast',
+            stats: stats, // Truyền stats lấy được vào State
           ),
         );
       } else {
@@ -45,22 +45,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Future<void> _onUpdateReadingStats(
-    UpdateReadingStatsEvent event,
-    Emitter<ProfileState> emit,
-  ) async {
-    if (state is ProfileLoaded) {
-      final currentState = state as ProfileLoaded;
-      emit(
-        currentState.copyWith(
-          booksRead: event.booksRead,
-          dayStreak: event.dayStreak,
-          timeRead: event.timeRead,
-        ),
-      );
-    }
-  }
-
   Future<void> _onUpdateUserInfo(
     UpdateUserInfoEvent event,
     Emitter<ProfileState> emit,
@@ -68,7 +52,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       final user = _firebaseAuth.currentUser;
       if (user != null && state is ProfileLoaded) {
-        // Update user info in Firebase
         if (event.displayName != null) {
           await user.updateDisplayName(event.displayName);
         }
@@ -79,7 +62,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
         final updatedUser = _firebaseAuth.currentUser!;
         final currentState = state as ProfileLoaded;
-        emit(currentState.copyWith(user: updatedUser));
+
+        // Giữ nguyên stats cũ, chỉ update user info
+        emit(ProfileLoaded(
+          user: updatedUser,
+          stats: currentState.stats,
+        ));
       }
     } catch (e) {
       emit(ProfileError('Failed to update user info: ${e.toString()}'));

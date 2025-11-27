@@ -30,9 +30,67 @@ class ReaderScreen extends StatefulWidget {
 }
 
 class _ReaderScreenState extends State<ReaderScreen> {
+  // 1. Biến đo thời gian
+  DateTime? _startTime;
+
+  @override
+  void initState() {
+    super.initState();
+    // Bắt đầu tính giờ khi vào màn hình
+    _startTime = DateTime.now();
+  }
+
+  // 2. Hàm gọi API cập nhật thống kê
+  Future<void> _updateStats() async {
+    if (_startTime == null) return;
+
+    final minutes = DateTime.now().difference(_startTime!).inMinutes;
+    // Tạm thời comment dòng này để test cho dễ (đọc vài giây cũng tính)
+    // if (minutes < 1) return;
+
+    // === KIỂM TRA LOGIC CHƯƠNG CUỐI ===
+    // Index hiện tại (bắt đầu từ 0)
+    int currentIndex = widget.currentChapterIndex;
+    // Tổng số chương
+    int totalChapters = widget.allChapters.length;
+
+    // Điều kiện: Index hiện tại == (Tổng - 1)
+    final isLastChapter = currentIndex == (totalChapters - 1);
+
+    print("---------------- DEBUG STATS ----------------");
+    print("User: ${FirebaseAuth.instance.currentUser?.uid}");
+    print("Sách ID: ${widget.bookId}");
+    print("Phút đọc: $minutes");
+    print("Chương hiện tại: $currentIndex / ${totalChapters - 1}");
+    print("👉 ĐÃ XONG SÁCH CHƯA?: $isLastChapter");
+    print("---------------------------------------------");
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await context.read<UserRepository>().updateReadingStats(
+            userId: user.uid,
+            bookId: widget.bookId, // Đảm bảo trường này không null
+            minutesRead: minutes,
+            isBookFinished: isLastChapter,
+          );
+    }
+  }
+
+  // 3. Gọi hàm này khi thoát (PopScope)
+  // Trong hàm build, chỗ PopScope bạn đã làm ở bài trước:
+  /*
+  onPopInvoked: (didPop) async {
+      if (didPop) {
+          _saveProgress(); // Lưu vị trí
+          await _updateStats(); // <--- GỌI THÊM HÀM NÀY
+      }
+  }
+  */
   // Hàm lưu tiến độ xuống Database
   void _saveProgress() {
     final user = FirebaseAuth.instance.currentUser;
+// 1. Tính thời gian
+    final minutes = DateTime.now().difference(_startTime!).inMinutes;
 
     // Chỉ lưu nếu đã đăng nhập
     if (user != null) {
@@ -42,19 +100,18 @@ class _ReaderScreenState extends State<ReaderScreen> {
 
       // Gọi Repository (đã inject ở main.dart)
       context.read<UserRepository>().saveReadingProgress(
-        userId: user.uid,
-        bookId: widget.bookId,
-        chapterId: widget.chapterId,
-      );
+            userId: user.uid,
+            bookId: widget.bookId,
+            chapterId: widget.chapterId,
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          ReaderBloc(repository: BookRepository())
-            ..add(LoadChapterContentEvent(chapterId: widget.chapterId)),
+      create: (context) => ReaderBloc(repository: BookRepository())
+        ..add(LoadChapterContentEvent(chapterId: widget.chapterId)),
       child: PopScope(
         canPop: true, // Cho phép thoát màn hình bình thường
         onPopInvoked: (didPop) {
@@ -81,9 +138,14 @@ class _ReaderScreenState extends State<ReaderScreen> {
       shadowColor: Colors.black.withOpacity(0.1),
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: Colors.black),
-        onPressed: () {
-          _saveProgress(); // 1. Lưu trước
-          Navigator.pop(context); // 2. Rồi mới thoát
+        onPressed: () async {
+          // Gọi hàm tính toán thống kê trước
+          await _updateStats();
+          _saveProgress(); // Lưu trước
+          // Sau khi xử lý xong mới thoát màn hình
+          if (context.mounted) {
+            Navigator.pop(context);
+          }
         },
       ),
       title: Column(

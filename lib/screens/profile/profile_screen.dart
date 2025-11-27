@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart'; // Lấy version app
+import 'package:smart_reader/repositories/user_repository.dart';
+import 'package:url_launcher/url_launcher.dart'; // Mở link web/email
+
 import 'package:smart_reader/screens/auth/bloc/auth_bloc.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_event.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_state.dart';
@@ -16,7 +20,9 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProfileBloc()..add(LoadUserProfileEvent()),
+      create: (context) => ProfileBloc(
+        userRepository: context.read<UserRepository>(),
+      )..add(LoadUserProfileEvent()),
       child: const _ProfileScreenContent(),
     );
   }
@@ -24,6 +30,87 @@ class ProfileScreen extends StatelessWidget {
 
 class _ProfileScreenContent extends StatelessWidget {
   const _ProfileScreenContent();
+
+  // --- HÀM HỖ TRỢ (HELPER METHODS) ---
+
+  // 1. Gửi email hỗ trợ
+  Future<void> _sendSupportEmail() async {
+    final Uri emailLaunchUri = Uri(
+      scheme: 'mailto',
+      path: 'hotro.smartbook@gmail.com', // Thay email của bạn
+      query: 'subject=Hỗ trợ người dùng SmartBook',
+    );
+    if (!await launchUrl(emailLaunchUri)) {
+      debugPrint('Không thể mở ứng dụng email');
+    }
+  }
+
+  // 2. Hiển thị Dialog Giới thiệu (About)
+  Future<void> _showAboutDialog(BuildContext context) async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    if (context.mounted) {
+      showAboutDialog(
+        context: context,
+        applicationName: "Smart Book",
+        applicationVersion: "Phiên bản ${packageInfo.version}",
+        applicationIcon: const Icon(
+          Icons.menu_book_rounded,
+          size: 50,
+          color: AppColors.primary,
+        ),
+        children: [
+          const SizedBox(height: 20),
+          const Text(
+            "Ứng dụng đọc sách thông minh giúp bạn xây dựng thói quen đọc sách mỗi ngày.",
+          ),
+          const SizedBox(height: 10),
+          const Text("Phát triển bởi Team SmartBook."),
+        ],
+      );
+    }
+  }
+
+  // 3. Dialog xác nhận đăng xuất
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            'Đăng xuất',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: const Text(
+            'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text('Hủy', style: TextStyle(color: Colors.grey[600])),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Đóng dialog
+                // Gọi AuthBloc để xử lý logic đăng xuất
+                context.read<AuthBloc>().add(LogoutEvent());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[600],
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Đăng xuất'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +122,11 @@ class _ProfileScreenContent extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
           ),
         ),
         title: const Text(
-          'Profile',
+          'Hồ sơ cá nhân',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 18,
@@ -50,19 +137,21 @@ class _ProfileScreenContent extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.black87),
             onPressed: () {
-              // Show more options menu
+              // Menu mở rộng (nếu cần)
             },
           ),
         ],
       ),
       body: MultiBlocListener(
         listeners: [
+          // Lắng nghe sự kiện đăng xuất thành công để chuyển màn hình
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthUnauthenticated) {
-                Navigator.of(
-                  context,
-                ).pushNamedAndRemoveUntil('/onboarding', (route) => false);
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/login', // Đảm bảo route này đúng với main.dart
+                  (route) => false,
+                );
               }
             },
           ),
@@ -87,7 +176,7 @@ class _ProfileScreenContent extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    // Profile Header
+                    // --- HEADER: AVATAR & TÊN ---
                     Container(
                       padding: const EdgeInsets.all(24.0),
                       decoration: BoxDecoration(
@@ -103,19 +192,18 @@ class _ProfileScreenContent extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          // Profile Avatar
                           Stack(
                             children: [
                               CircleAvatar(
                                 radius: 40,
-                                backgroundImage: state.user.photoURL != null
-                                    ? NetworkImage(state.user.photoURL!)
-                                    : null,
                                 backgroundColor: AppColors.primary.withOpacity(
                                   0.1,
                                 ),
+                                backgroundImage: state.user.photoURL != null
+                                    ? NetworkImage(state.user.photoURL!)
+                                    : null,
                                 child: state.user.photoURL == null
-                                    ? Icon(
+                                    ? const Icon(
                                         Icons.person,
                                         size: 40,
                                         color: AppColors.primary,
@@ -141,10 +229,8 @@ class _ProfileScreenContent extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 16),
-
-                          // User Name
                           Text(
-                            state.user.displayName ?? 'User',
+                            state.user.displayName ?? 'Người dùng',
                             style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
@@ -152,10 +238,8 @@ class _ProfileScreenContent extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-
-                          // User Subtitle
                           Text(
-                            state.userTitle,
+                            state.userTitle, // Ví dụ: "Thành viên tích cực"
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.grey,
@@ -167,7 +251,7 @@ class _ProfileScreenContent extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
-                    // Reading Stats
+                    // --- THỐNG KÊ ĐỌC SÁCH ---
                     Container(
                       padding: const EdgeInsets.all(20.0),
                       decoration: BoxDecoration(
@@ -185,7 +269,7 @@ class _ProfileScreenContent extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Reading Stats',
+                            'Thống kê đọc sách',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -193,32 +277,31 @@ class _ProfileScreenContent extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
-
                           Row(
                             children: [
                               Expanded(
                                 child: _buildStatCard(
-                                  '${state.booksRead}',
-                                  'Books\nRead',
-                                  Colors.teal[100]!,
+                                  '${state.stats.booksRead}',
+                                  'Sách\nđã đọc',
+                                  Colors.teal[50]!,
                                   Colors.teal[700]!,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildStatCard(
-                                  '${state.dayStreak}',
-                                  'Day Streak',
-                                  Colors.pink[100]!,
+                                  '${state.stats.dayStreak}',
+                                  'Chuỗi\nngày',
+                                  Colors.pink[50]!,
                                   Colors.pink[700]!,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildStatCard(
-                                  '${state.timeRead}h',
-                                  'Time Read',
-                                  Colors.orange[100]!,
+                                  '${(state.stats.totalMinutes / 60).toStringAsFixed(0)}h',
+                                  'Thời gian\nđọc',
+                                  Colors.orange[50]!,
                                   Colors.orange[700]!,
                                 ),
                               ),
@@ -230,7 +313,7 @@ class _ProfileScreenContent extends StatelessWidget {
 
                     const SizedBox(height: 24),
 
-                    // Menu Options
+                    // --- MENU TÙY CHỌN ---
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -247,42 +330,41 @@ class _ProfileScreenContent extends StatelessWidget {
                         children: [
                           _buildMenuItem(
                             Icons.settings,
-                            'Settings',
-                            'Preferences & notifications',
+                            'Cài đặt',
+                            'Tùy chọn & thông báo',
                             Colors.grey[600]!,
                             () {
-                              // Navigate to settings
+                              // Điều hướng đến trang Settings
+                              // Navigator.pushNamed(context, '/settings');
                             },
                           ),
                           _buildDivider(),
                           _buildMenuItem(
                             Icons.help,
-                            'Help & Support',
-                            'Get help and contact us',
+                            'Trợ giúp & Hỗ trợ',
+                            'Liên hệ để được giải đáp',
                             Colors.blue[600]!,
-                            () {
-                              // Navigate to help
-                            },
+                            _sendSupportEmail, // Gọi hàm mở email
                           ),
                           _buildDivider(),
                           _buildMenuItem(
                             Icons.info,
-                            'About',
-                            'App info & privacy policy',
+                            'Giới thiệu',
+                            'Thông tin ứng dụng & chính sách',
                             Colors.purple[600]!,
-                            () {
-                              // Navigate to about
-                            },
+                            () => _showAboutDialog(
+                              context,
+                            ), // Gọi dialog giới thiệu
                           ),
                           _buildDivider(),
                           _buildMenuItem(
                             Icons.logout,
-                            'Logout',
-                            'Sign out of your account',
+                            'Đăng xuất',
+                            'Thoát khỏi tài khoản',
                             Colors.red[600]!,
-                            () {
-                              _showLogoutDialog(context);
-                            },
+                            () => _showLogoutDialog(
+                              context,
+                            ), // Gọi dialog đăng xuất
                           ),
                         ],
                       ),
@@ -294,24 +376,21 @@ class _ProfileScreenContent extends StatelessWidget {
               );
             }
 
-            return const Center(child: Text('Unable to load profile'));
+            return const Center(child: Text('Không thể tải hồ sơ'));
           },
         ),
       ),
       bottomNavigationBar: CustomFooter(
-        selectedIndex: 3, // Profile is index 3
+        selectedIndex: 3, // Profile là index 3
         onItemSelected: (index) {
-          if (index == 0) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
-          }
-          // Other navigation cases handled by CustomFooter
+          // Footer đã tự xử lý việc điều hướng (thường là dùng Navigator)
+          // Code ở đây chỉ xử lý logic phụ nếu cần
         },
       ),
     );
   }
 
+  // Widget thẻ thống kê
   Widget _buildStatCard(
     String value,
     String label,
@@ -319,7 +398,7 @@ class _ProfileScreenContent extends StatelessWidget {
     Color textColor,
   ) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(12),
@@ -349,6 +428,7 @@ class _ProfileScreenContent extends StatelessWidget {
     );
   }
 
+  // Widget dòng menu
   Widget _buildMenuItem(
     IconData icon,
     String title,
@@ -389,48 +469,5 @@ class _ProfileScreenContent extends StatelessWidget {
 
   Widget _buildDivider() {
     return Divider(height: 1, color: Colors.grey[200], indent: 60);
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: const Text(
-            'Logout',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: const Text(
-            'Are you sure you want to logout from your account?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: Text('Cancel', style: TextStyle(color: Colors.grey[600])),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                // Use AuthBloc to logout
-                context.read<AuthBloc>().add(LogoutEvent());
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red[600],
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Logout'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

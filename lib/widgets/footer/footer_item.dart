@@ -26,7 +26,10 @@ class FooterItem extends StatelessWidget {
           Icon(icon, color: isSelected ? AppColors.primary : Colors.grey),
           Text(
             label,
-            style: const TextStyle(color: Colors.white, fontSize: 12),
+            style: const TextStyle(
+                color: AppColors.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w500),
           ),
         ],
       ),

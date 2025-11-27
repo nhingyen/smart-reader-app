@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:smart_reader/models/user_model.dart';
+import 'package:smart_reader/models/user.dart';
 import 'package:smart_reader/services/user_service.dart';
 
 class AuthService {

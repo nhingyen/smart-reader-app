@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/reading_progess.dart';
+import 'package:smart_reader/models/user_stats.dart';
 
 class UserRepository {
   // Sửa thành static GETTER
@@ -112,6 +113,51 @@ class UserRepository {
       return false;
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<void> updateReadingStats({
+    required String bookId,
+    required String userId,
+    required int minutesRead,
+    required bool isBookFinished,
+  }) async {
+    try {
+      await http.post(
+        Uri.parse('$_baseUrl/api/users/stats'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "bookId": bookId,
+          "userId": userId,
+          "minutesRead": minutesRead,
+          "isBookFinished": isBookFinished
+        }),
+      );
+    } catch (e) {
+      print("Lỗi update stats: $e");
+    }
+  }
+
+  Future<UserStats> fetchUserStats(String userId) async {
+    try {
+      // Gọi API GET để lấy thông tin User (bao gồm stats)
+      // Lưu ý: Bạn cần chắc chắn Backend đã có API này (xem bước 2 bên dưới)
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/users/$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+
+        // Backend trả về object User, ta lấy trường 'stats' bên trong
+        return UserStats.fromJson(data['stats'] ?? {});
+      } else {
+        print("Lỗi lấy User Stats: ${response.statusCode}");
+        return UserStats.empty(); // Trả về data rỗng nếu lỗi
+      }
+    } catch (e) {
+      print("Lỗi kết nối fetchUserStats: $e");
+      return UserStats.empty();
     }
   }
 }
