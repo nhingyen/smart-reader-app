@@ -1,12 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:smart_reader/models/chapter_info.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
+import 'package:smart_reader/repositories/user_repository.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_bloc.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_state.dart';
 
-class ReaderScreen extends StatelessWidget {
+class ReaderScreen extends StatefulWidget {
+  final String bookId;
   final String chapterId;
   final String bookTitle;
   final String chapterTitle;
@@ -15,25 +18,58 @@ class ReaderScreen extends StatelessWidget {
 
   const ReaderScreen({
     super.key,
+    required this.bookId,
     required this.chapterId,
     required this.bookTitle,
     required this.chapterTitle,
     required this.allChapters,
     required this.currentChapterIndex,
   });
+  @override
+  State<ReaderScreen> createState() => _ReaderScreenState();
+}
+
+class _ReaderScreenState extends State<ReaderScreen> {
+  // Hàm lưu tiến độ xuống Database
+  void _saveProgress() {
+    final user = FirebaseAuth.instance.currentUser;
+
+    // Chỉ lưu nếu đã đăng nhập
+    if (user != null) {
+      print(
+        "Đang lưu tiến độ: Book ${widget.bookId} - Chap ${widget.chapterId}",
+      );
+
+      // Gọi Repository (đã inject ở main.dart)
+      context.read<UserRepository>().saveReadingProgress(
+        userId: user.uid,
+        bookId: widget.bookId,
+        chapterId: widget.chapterId,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
           ReaderBloc(repository: BookRepository())
-            ..add(LoadChapterContentEvent(chapterId: chapterId)),
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _buildAppBar(context),
-        body: _buildBody(context),
-
-        bottomNavigationBar: _buildBottomCustomNav(context),
+            ..add(LoadChapterContentEvent(chapterId: widget.chapterId)),
+      child: PopScope(
+        canPop: true, // Cho phép thoát màn hình bình thường
+        onPopInvoked: (didPop) {
+          if (didPop) {
+            // Khi thoát thành công (vuốt back hoặc nút back hệ thống)
+            // Gọi hàm lưu lại tiến độ
+            _saveProgress();
+          }
+        },
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: _buildAppBar(context),
+          body: _buildBody(context),
+          bottomNavigationBar: _buildBottomCustomNav(context),
+        ),
       ),
     );
   }
@@ -45,13 +81,16 @@ class ReaderScreen extends StatelessWidget {
       shadowColor: Colors.black.withOpacity(0.1),
       leading: IconButton(
         icon: Icon(Icons.arrow_back, color: Colors.black),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          _saveProgress(); // 1. Lưu trước
+          Navigator.pop(context); // 2. Rồi mới thoát
+        },
       ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            bookTitle,
+            widget.bookTitle,
             style: const TextStyle(
               color: Colors.black,
               fontSize: 18,
@@ -88,7 +127,7 @@ class ReaderScreen extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  chapterTitle,
+                  widget.chapterTitle,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -211,9 +250,10 @@ class ReaderScreen extends StatelessWidget {
 
   Widget _buildChapterNavigation(BuildContext context) {
     //kiem tra xem co chuong truoc khogn
-    final bool hasPrevious = currentChapterIndex > 0;
+    final bool hasPrevious = widget.currentChapterIndex > 0;
     //kiem tra xem co chuong sau ko
-    final bool hasNext = currentChapterIndex < allChapters.length - 1;
+    final bool hasNext =
+        widget.currentChapterIndex < widget.allChapters.length - 1;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -231,16 +271,18 @@ class ReaderScreen extends StatelessWidget {
               ],
             ),
             onPressed: () {
-              final prevChapter = allChapters[currentChapterIndex - 1];
+              final prevChapter =
+                  widget.allChapters[widget.currentChapterIndex - 1];
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ReaderScreen(
+                    bookId: widget.bookId,
                     chapterId: prevChapter.id,
-                    bookTitle: bookTitle,
+                    bookTitle: widget.bookTitle,
                     chapterTitle: prevChapter.title,
-                    allChapters: allChapters,
-                    currentChapterIndex: currentChapterIndex - 1,
+                    allChapters: widget.allChapters,
+                    currentChapterIndex: widget.currentChapterIndex - 1,
                   ),
                 ),
               );
@@ -267,17 +309,19 @@ class ReaderScreen extends StatelessWidget {
             ),
             onPressed: () {
               // Lấy thông tin chương sau
-              final nextChapter = allChapters[currentChapterIndex + 1];
+              final nextChapter =
+                  widget.allChapters[widget.currentChapterIndex + 1];
               // Thay thế màn hình hiện tại bằng màn hình mới (chương sau)
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => ReaderScreen(
+                    bookId: widget.bookId,
                     chapterId: nextChapter.id,
                     chapterTitle: nextChapter.title,
-                    bookTitle: bookTitle,
-                    allChapters: allChapters,
-                    currentChapterIndex: currentChapterIndex + 1,
+                    bookTitle: widget.bookTitle,
+                    allChapters: widget.allChapters,
+                    currentChapterIndex: widget.currentChapterIndex + 1,
                   ),
                 ),
               );

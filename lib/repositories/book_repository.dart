@@ -100,7 +100,6 @@ class BookRepository {
       'authors': authors,
       'newBooks': newBooks,
       'specialBooks': specialBooks,
-      'continueReading': <Book>[],
     };
   }
 
