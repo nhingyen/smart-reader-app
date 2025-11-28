@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart'; // Lấy version app
 import 'package:smart_reader/repositories/user_repository.dart';
-import 'package:url_launcher/url_launcher.dart'; // Mở link web/email
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_bloc.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_event.dart';
 import 'package:smart_reader/screens/auth/bloc/auth_state.dart';
@@ -13,6 +13,8 @@ import 'package:smart_reader/screens/profile/bloc/profile_event.dart';
 import 'package:smart_reader/screens/profile/bloc/profile_state.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/footer/footer.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -67,6 +69,52 @@ class _ProfileScreenContent extends StatelessWidget {
           const Text("Phát triển bởi Team SmartBook."),
         ],
       );
+    }
+  }
+
+  // Hàm xử lý chọn ảnh và upload
+  Future<void> _pickAndUploadImage(BuildContext context) async {
+    final picker = ImagePicker();
+    // Mở thư viện ảnh
+    final XFile? pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 50 // Nén ảnh lại cho nhẹ (quan trọng)
+        );
+
+    if (pickedFile == null) return; // User hủy chọn
+
+    // Hiện loading
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Đang cập nhật ảnh...")),
+    );
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final repo = context.read<UserRepository>();
+
+      // 1. Upload lên Storage
+      final String? downloadUrl =
+          await repo.uploadAvatar(File(pickedFile.path), user.uid);
+
+      if (downloadUrl != null) {
+        // 2. Cập nhật Profile
+        await repo.updateUserProfile(userId: user.uid, photoUrl: downloadUrl);
+
+        // 3. Reload Bloc để UI hiển thị ảnh mới ngay lập tức
+        if (context.mounted) {
+          context.read<ProfileBloc>().add(LoadUserProfileEvent());
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Đổi ảnh thành công!")),
+          );
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Lỗi khi upload ảnh")),
+          );
+        }
+      }
     }
   }
 
@@ -192,41 +240,45 @@ class _ProfileScreenContent extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          Stack(
-                            children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundColor: AppColors.primary.withOpacity(
-                                  0.1,
+                          GestureDetector(
+                            onTap: () => _pickAndUploadImage(context),
+                            child: Stack(
+                              children: [
+                                CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor:
+                                      AppColors.primary.withOpacity(0.1),
+                                  backgroundImage: state.user.photoURL != null
+                                      ? NetworkImage(state.user.photoURL!)
+                                      : null,
+                                  child: state.user.photoURL == null
+                                      ? const Icon(Icons.person,
+                                          size: 40, color: AppColors.primary)
+                                      : null,
                                 ),
-                                backgroundImage: state.user.photoURL != null
-                                    ? NetworkImage(state.user.photoURL!)
-                                    : null,
-                                child: state.user.photoURL == null
-                                    ? const Icon(
-                                        Icons.person,
-                                        size: 40,
-                                        color: AppColors.primary,
-                                      )
-                                    : null,
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: const BoxDecoration(
-                                    color: Colors.green,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.check,
-                                    size: 12,
-                                    color: Colors.white,
+
+                                // --- ICON MÁY ẢNH (Thêm vào góc dưới) ---
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            color: Colors.grey[300]!),
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 4)
+                                        ]),
+                                    child: const Icon(Icons.camera_alt,
+                                        size: 14, color: Colors.black54),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Text(

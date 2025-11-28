@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/reading_progess.dart';
 import 'package:smart_reader/models/user_stats.dart';
@@ -158,6 +161,54 @@ class UserRepository {
     } catch (e) {
       print("Lỗi kết nối fetchUserStats: $e");
       return UserStats.empty();
+    }
+  }
+
+// 1. Hàm Upload ảnh lên Firebase và lấy URL
+  Future<String?> uploadAvatar(File imageFile, String userId) async {
+    try {
+      // Tạo tên file: avatars/uid_time.jpg (thêm time để tránh cache ảnh cũ)
+      String fileName =
+          'avatars/${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final ref = FirebaseStorage.instance.ref().child(fileName);
+
+      // Bắt đầu upload
+      await ref.putFile(imageFile);
+
+      // Lấy link tải về
+      final url = await ref.getDownloadURL();
+      return url;
+    } catch (e) {
+      print("Lỗi upload Storage: $e");
+      return null;
+    }
+  }
+
+// 2. Hàm cập nhật thông tin (Gọi cả Firebase & Mongo)
+  Future<void> updateUserProfile(
+      {required String userId, String? photoUrl, String? displayName}) async {
+    // A. Cập nhật Firebase Auth (Để app hiển thị ngay)
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      if (photoUrl != null) await user.updatePhotoURL(photoUrl);
+      if (displayName != null) await user.updateDisplayName(displayName);
+      await user.reload(); // Refresh user
+    }
+
+    // B. Cập nhật MongoDB (Để lưu lâu dài)
+    try {
+      Map<String, dynamic> body = {};
+      if (photoUrl != null) body['photoURL'] = photoUrl;
+      if (displayName != null) body['displayName'] = displayName;
+
+      await http.put(
+        Uri.parse('$_baseUrl/api/users/$userId'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(body),
+      );
+    } catch (e) {
+      print("Lỗi sync MongoDB: $e");
     }
   }
 }
