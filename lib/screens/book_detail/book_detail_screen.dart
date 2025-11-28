@@ -354,7 +354,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   ],
                 ),
                 Text(
-                  "${book.chapterCount.toInt()} Chương",
+                  "${book.chapters.length} Chương",
                   style: TextStyle(fontSize: 13, color: AppColors.textDark),
                 ),
                 // Thêm rating và thống kê ở đây
