@@ -159,4 +159,26 @@ class BookRepository {
       return null;
     }
   }
+
+  // Hàm gọi AI tóm tắt
+  Future<String?> summarizeChapter(String text) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/ai/summarize'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"text": text}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        return data['summary']; // Trả về đoạn văn tóm tắt
+      } else {
+        print("Lỗi API AI: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      print("Lỗi kết nối AI: $e");
+      return null;
+    }
+  }
 }

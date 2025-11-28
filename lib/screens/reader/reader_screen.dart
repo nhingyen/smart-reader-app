@@ -9,6 +9,7 @@ import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/repositories/user_repository.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_bloc.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_state.dart';
+import 'package:smart_reader/theme/app_colors.dart';
 
 // === 1. WIDGET VỎ (WRAPPER) - NHIỆM VỤ KHỞI TẠO BLOC ===
 class ReaderScreen extends StatelessWidget {
@@ -185,6 +186,129 @@ class _ReaderViewState extends State<ReaderView> {
     if (mounted) Navigator.pop(context);
   }
 
+  void _showSummarySheet(String summary) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Cho phép chỉnh chiều cao tùy ý
+      backgroundColor: Colors.transparent, // Để bo góc đẹp hơn
+      builder: (context) {
+        return Container(
+          height:
+              MediaQuery.of(context).size.height * 0.7, // Chiếm 70% màn hình
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // --- Tiêu đề ---
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.purple[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.auto_awesome,
+                        color: AppColors.primary),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    "AI Tóm tắt chương",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
+                  )
+                ],
+              ),
+              const Divider(height: 30),
+
+              // --- Nội dung tóm tắt ---
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    summary,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        height: 1.6, // Giãn dòng cho dễ đọc
+                        color: Colors.black87),
+                  ),
+                ),
+              ),
+
+              // --- Nút đóng ---
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10))),
+                  child: const Text("Đã hiểu"),
+                ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _handleSummarize() async {
+    // 1. Lấy nội dung chương hiện tại từ Bloc
+    final state = context.read<ReaderBloc>().state;
+    if (state is! ReaderLoaded) return;
+
+    // 2. Hiện Loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary)),
+    );
+
+    try {
+      // 3. Lọc sạch HTML (Dùng lại hàm _stripHtml bạn đã viết ở phần TTS)
+      String cleanText = _stripHtml(state.chapter.content);
+
+      // Cắt bớt nếu quá dài (Gemini 2.5 Flash xử lý được rất nhiều, nhưng cắt cho an toàn đường truyền)
+      if (cleanText.length > 20000) {
+        cleanText = cleanText.substring(0, 20000);
+      }
+
+      // 4. Gọi Repository
+      final repo = context.read<BookRepository>();
+      final summary = await repo.summarizeChapter(cleanText);
+
+      // Tắt Loading
+      if (mounted) Navigator.pop(context);
+
+      if (summary != null) {
+        // 5. Hiện kết quả
+        if (mounted) _showSummarySheet(summary);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("AI không thể tóm tắt lúc này.")),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) Navigator.pop(context); // Tắt loading nếu lỗi
+      print("Lỗi tóm tắt: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // KHÔNG bọc BlocProvider ở đây nữa
@@ -312,7 +436,7 @@ class _ReaderViewState extends State<ReaderView> {
                     label: "Tóm tắt",
                     iconColor: const Color(0xFFF96060),
                     bgColor: const Color(0xFFFFF0F0),
-                    onTap: () {},
+                    onTap: _handleSummarize,
                   ),
                   _buildCustomNavItem(
                     icon: Icons.chat_rounded,
