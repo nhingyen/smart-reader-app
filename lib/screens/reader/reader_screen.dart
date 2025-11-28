@@ -7,6 +7,7 @@ import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart
 import 'package:smart_reader/models/chapter_info.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/repositories/user_repository.dart';
+import 'package:smart_reader/screens/ai_chat/ai_chat_dialog.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_bloc.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_state.dart';
 import 'package:smart_reader/theme/app_colors.dart';
@@ -144,6 +145,28 @@ class _ReaderViewState extends State<ReaderView> {
     } finally {
       if (mounted) setState(() => _isLoadingAudio = false);
     }
+  }
+
+  // --- LOGIC AI CHAT ---
+  Future<void> _openAIChatDialog(BuildContext context) async {
+    final state = context.read<ReaderBloc>().state;
+    if (state is! ReaderLoaded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Đang tải nội dung, vui lòng chờ...")),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AIChatDialog(
+        bookId: widget.bookId,
+        chapterId: widget.chapterId,
+        bookTitle: widget.bookTitle,
+        chapterTitle: widget.chapterTitle,
+        chapterContent: state.chapter.content,
+      ),
+    );
   }
 
   // --- LOGIC THỐNG KÊ (STATS) ---
@@ -443,7 +466,7 @@ class _ReaderViewState extends State<ReaderView> {
                     label: "AI Chat",
                     iconColor: const Color(0xFFFFA940),
                     bgColor: const Color(0xFFFFF8ED),
-                    onTap: () {},
+                    onTap: () => _openAIChatDialog(context),
                   ),
                   _buildCustomNavItem(
                     icon: Icons.settings_rounded,
