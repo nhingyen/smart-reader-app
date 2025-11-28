@@ -13,7 +13,7 @@ import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
 import 'package:smart_reader/screens/author_detail/author_detail_screen.dart';
-import 'package:smart_reader/screens/reader/reader_sceen.dart';
+import 'package:smart_reader/screens/reader/reader_screen.dart';
 import 'package:smart_reader/screens/search/search_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/author_avatar.dart';
@@ -151,7 +151,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-
                 body: Column(
                   children: [
                     Expanded(
@@ -272,15 +271,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: state.categories.map((c) {
                                 final selected =
                                     state.selectedCategory?.categoryName ==
-                                    c.categoryName;
+                                        c.categoryName;
                                 return GestureDetector(
                                   onTap: () {
                                     print(
                                       "=> Category tapped: ${c.categoryName}",
                                     );
                                     context.read<HomeBloc>().add(
-                                      CategorySelectedEvent(c),
-                                    );
+                                          CategorySelectedEvent(c),
+                                        );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -399,8 +398,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             AuthorDetailScreen(
-                                              authorId: a.authorId,
-                                            ),
+                                          authorId: a.authorId,
+                                        ),
                                       ),
                                     );
                                   },

@@ -10,7 +10,7 @@ import 'package:smart_reader/screens/book_detail/bloc/book_detail_event.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_state.dart';
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
-import 'package:smart_reader/screens/reader/reader_sceen.dart';
+import 'package:smart_reader/screens/reader/reader_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/buttons.dart';
 // ... import các file BLoC và Repository của bạn
@@ -37,9 +37,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void _checkStatus() async {
     if (user != null) {
       final status = await context.read<UserRepository>().checkIsAdded(
-        user!.uid,
-        widget.bookId,
-      );
+            user!.uid,
+            widget.bookId,
+          );
       setState(() {
         isAdded = status;
       });
@@ -55,9 +55,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
     // 1. Gọi API
     final newStatus = await context.read<UserRepository>().toggleLibrary(
-      user!.uid,
-      widget.bookId,
-    );
+          user!.uid,
+          widget.bookId,
+        );
 
     // 2. Cập nhật UI nút bấm
     setState(() {
@@ -83,9 +83,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   Widget build(BuildContext context) {
     // 1. Khởi tạo BLoC và tải dữ liệu ngay lập tức
     return BlocProvider(
-      create: (context) =>
-          BookDetailBloc(repository: BookRepository())
-            ..add(LoadBookDetailEvent(bookId: widget.bookId)),
+      create: (context) => BookDetailBloc(repository: BookRepository())
+        ..add(LoadBookDetailEvent(bookId: widget.bookId)),
       child: Scaffold(
         body: BlocBuilder<BookDetailBloc, BookDetailState>(
           builder: (context, state) {
@@ -266,9 +265,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   // Icon thay đổi theo trạng thái
                   icon: Icon(
                     isAdded ? Icons.check : Icons.add,
-                    color: isAdded
-                        ? AppColors.primary
-                        : const Color(0xFF28C7A0),
+                    color:
+                        isAdded ? AppColors.primary : const Color(0xFF28C7A0),
                   ),
 
                   // Chữ thay đổi theo trạng thái

@@ -83,13 +83,11 @@ class BookRepository {
         .map((json) => BookCategory.fromJson(json))
         .toList();
 
-    final authors = (data['authors'] as List)
-        .map((json) => Author.fromJson(json))
-        .toList();
+    final authors =
+        (data['authors'] as List).map((json) => Author.fromJson(json)).toList();
 
-    final newBooks = (data['newBooks'] as List)
-        .map((json) => Book.fromJson(json))
-        .toList();
+    final newBooks =
+        (data['newBooks'] as List).map((json) => Book.fromJson(json)).toList();
 
     final specialBooks = (data['specialBooks'] as List)
         .map((json) => Book.fromJson(json))
@@ -117,9 +115,8 @@ class BookRepository {
     // 2️⃣ Parse books
     List<Book> books = [];
     if (data['books'] != null) {
-      books = (data['books'] as List)
-          .map((item) => Book.fromJson(item))
-          .toList();
+      books =
+          (data['books'] as List).map((item) => Book.fromJson(item)).toList();
     }
 
     return {'author': author, 'books': books};
@@ -138,6 +135,28 @@ class BookRepository {
     } catch (e) {
       print("Lỗi searchBooks: $e");
       return []; // Trả về rỗng nếu lỗi
+    }
+  }
+
+  // Hàm chuyển Text -> Audio
+  Future<String?> getAudioFromText(String text) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/tts'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"text": text}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        return data['audioContent']; // Trả về chuỗi Base64
+      } else {
+        print("Lỗi API TTS: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      print("Lỗi kết nối TTS: $e");
+      return null;
     }
   }
 }
