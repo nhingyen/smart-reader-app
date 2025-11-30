@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/chapter_info.dart';
+import 'package:smart_reader/models/reivew.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
 import 'package:smart_reader/repositories/user_repository.dart';
 import 'package:smart_reader/screens/book_detail/bloc/book_detail_bloc.dart';
@@ -79,6 +80,35 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
+  // --- HÀM MỞ FORM BÌNH LUẬN (MỚI) ---
+  // Trong class _BookDetailScreenState
+
+  void _showReviewForm(BuildContext context, String bookId) {
+    // 1. Lấy instance của Bloc đang chạy TỪ TRONG SCOPE CỦA BOOKDETAILSCREEN
+    final bookDetailBloc = context.read<BookDetailBloc>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (modalContext) {
+        // Dùng modalContext cho Widget con
+
+        // 2. Bọc Form nhập liệu bằng BlocProvider.value
+        return BlocProvider.value(
+          value: bookDetailBloc, // 🎯 Truyền instance Bloc đã lấy vào Route mới
+          child: ReviewInputForm(bookId: bookId),
+        );
+      },
+    ).then((_) {
+      // Tùy chọn: Reload lại dữ liệu trang chi tiết khi modal đóng
+      if (context.mounted) {
+        // Reload để cập nhật list reviews và điểm
+        bookDetailBloc.add(LoadBookDetailEvent(bookId: widget.bookId));
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // 1. Khởi tạo BLoC và tải dữ liệu ngay lập tức
@@ -94,7 +124,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
             if (state is BookDetailLoaded) {
               final book = state.book;
-              return _buildLoadedContent(context, book);
+              final reviews = state.reviews;
+              return _buildLoadedContent(context, book, reviews);
             }
 
             if (state is BookDetailError) {
@@ -109,7 +140,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   }
 
   // Phương thức tách riêng để xây dựng UI sau khi tải dữ liệu thành công
-  Widget _buildLoadedContent(BuildContext context, Book book) {
+  Widget _buildLoadedContent(
+      BuildContext context, Book book, List<Review> reviews) {
     // Sử dụng DefaultTabController để quản lý 3 tabs: About, Chapters, Reviews
     return DefaultTabController(
       length: 3,
@@ -165,7 +197,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
           children: [
             BookSynopsisTab(book: book),
             BookChaptersTab(book: book, chapters: book.chapters),
-            const Center(child: Text("Chức năng Reviews")),
+            BookReviewsTab(bookId: book.bookId, reviews: reviews),
           ],
         ),
       ),
@@ -293,7 +325,22 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               ),
             ),
             const SizedBox(width: 10),
-            ListButtons("Đánh giá", Icons.edit, () {}),
+            Expanded(
+              child: SizedBox(
+                height: 42,
+                child: OutlinedButton.icon(
+                  onPressed: () => _showReviewForm(
+                      context, book.bookId), // 🎯 GẮN HÀM VÀO ĐÂY
+                  icon: Icon(Icons.edit, color: Colors.grey[700]),
+                  label: Text("Bình luận",
+                      style: TextStyle(color: Colors.grey[700])),
+                  style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.grey[400]!),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                ),
+              ),
+            ),
           ],
         ),
       ],
@@ -434,6 +481,194 @@ class BookChaptersTab extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+// ===========================================
+// WIDGET CON: TAB VÀ FORM (THÊM VÀO CUỐI FILE)
+// ===========================================
+
+// A. BookReviewsTab (Hiển thị danh sách)
+class BookReviewsTab extends StatelessWidget {
+  final String bookId;
+  final List<Review> reviews;
+
+  const BookReviewsTab(
+      {super.key, required this.bookId, required this.reviews});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // NÚT MỞ FORM BÌNH LUẬN
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: ElevatedButton.icon(
+            onPressed: () {
+              // Gọi hàm mở form từ State cha
+              (context.findAncestorStateOfType<_BookDetailScreenState>()
+                      as _BookDetailScreenState)
+                  ._showReviewForm(context, bookId);
+            },
+            icon: const Icon(Icons.comment, color: Colors.white),
+            label: const Text("Viết bình luận của bạn",
+                style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 45),
+                backgroundColor: AppColors.primary),
+          ),
+        ),
+
+        // DANH SÁCH BÌNH LUẬN
+        Expanded(
+          child: reviews.isEmpty
+              ? const Center(child: Text("Chưa có bình luận nào."))
+              : ListView.builder(
+                  itemCount: reviews.length,
+                  itemBuilder: (context, index) {
+                    final review = reviews[index];
+                    return ListTile(
+                      // 1. AVATAR
+                      leading: CircleAvatar(
+                        // backgroundImage: review.userPhoto.isNotEmpty
+                        //     ? NetworkImage(review.userPhoto) as ImageProvider
+                        //     : null,
+                        child: review.userPhoto.isEmpty
+                            ? const Icon(Icons.person, color: Colors.white)
+                            : null,
+                      ),
+
+                      // 2. TÊN USER
+                      title: Text(
+                        'Người ẩn danh', // Hiển thị tên
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(review.comment),
+                      trailing:
+                          Text(review.createdAt.toString().substring(0, 10)),
+                    );
+                  },
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+// B. ReviewInputForm (Form Nhập liệu - Dạng BottomSheet)
+class ReviewInputForm extends StatefulWidget {
+  final String bookId;
+
+  const ReviewInputForm({super.key, required this.bookId});
+
+  @override
+  State<ReviewInputForm> createState() => _ReviewInputFormState();
+}
+
+class _ReviewInputFormState extends State<ReviewInputForm> {
+  final _commentController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  void _submitComment() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final commentText = _commentController.text.trim();
+
+    if (user == null || _isSubmitting || commentText.isEmpty) {
+      if (commentText.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Vui lòng nhập nội dung bình luận.")));
+      }
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final repo = context.read<BookRepository>();
+
+      // 1. Gửi bình luận (Comment Only)
+      await repo.submitReview(
+        userId: user.uid,
+        bookId: widget.bookId,
+        comment: commentText,
+      );
+
+      // 2. Thông báo thành công và reload
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Bình luận của bạn đã được gửi!")));
+
+        // 🎯 RELOAD BLOC: Tải lại chi tiết sách để list reviews được cập nhật
+        context
+            .read<BookDetailBloc>()
+            .add(LoadBookDetailEvent(bookId: widget.bookId));
+
+        Navigator.pop(context); // Đóng BottomSheet
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Lỗi: Không thể gửi bình luận: $e")));
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          top: 20,
+          left: 16,
+          right: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text("Viết bình luận",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 20),
+
+          // Ô nhập comment
+          TextField(
+            controller: _commentController,
+            maxLines: 4,
+            decoration: InputDecoration(
+              hintText: "Cảm nhận của bạn về cuốn sách...",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isSubmitting ? null : _submitComment,
+              style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  backgroundColor: AppColors.primary),
+              child: _isSubmitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2))
+                  : const Text("Gửi bình luận",
+                      style: TextStyle(fontSize: 16, color: Colors.white)),
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
+      ),
     );
   }
 }

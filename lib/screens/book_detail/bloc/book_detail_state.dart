@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:smart_reader/models/book.dart';
+import 'package:smart_reader/models/reivew.dart';
 
 abstract class BookDetailState extends Equatable {
   const BookDetailState();
@@ -14,11 +15,12 @@ class BookDetailLoading extends BookDetailState {}
 
 class BookDetailLoaded extends BookDetailState {
   final Book book;
+  final List<Review> reviews;
 
-  const BookDetailLoaded({required this.book});
+  const BookDetailLoaded({required this.book, this.reviews = const []});
 
   @override
-  List<Object?> props() => [book];
+  List<Object?> props() => [book, reviews];
 }
 
 class BookDetailError extends BookDetailState {

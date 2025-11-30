@@ -6,6 +6,7 @@ import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/models/chapter_detail.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:smart_reader/models/reivew.dart';
 
 class BookRepository {
   // Sửa thành static GETTER
@@ -180,5 +181,35 @@ class BookRepository {
       print("Lỗi kết nối AI: $e");
       return null;
     }
+  }
+
+  // 1. Gửi bình luận (Comment Only)
+  Future<void> submitReview(
+      {required String userId,
+      required String bookId,
+      required String comment // ⚡️ KHÔNG CẦN RATING
+      }) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/reviews'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'userId': userId,
+        'bookId': bookId,
+        'comment': comment, // Chỉ gửi comment
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to submit comment');
+    }
+  }
+
+  // 2. Lấy danh sách đánh giá
+  Future<List<Review>> fetchReviews(String bookId) async {
+    final response = await http.get(Uri.parse('$_baseUrl/api/reviews/$bookId'));
+    if (response.statusCode == 200) {
+      final List data = json.decode(utf8.decode(response.bodyBytes));
+      return data.map((json) => Review.fromJson(json)).toList();
+    }
+    return [];
   }
 }
