@@ -84,42 +84,42 @@ flutter run
 
 ## Screenshots
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
 <img src="assets/screenshots/intro1.jpg" width="23%" alt="" />
 <img src="assets/screenshots/intro2.jpg" width="23%" alt="" />
 <img src="assets/screenshots/intro3.jpg" width="23%" alt="" />
 <img src="assets/screenshots/login.jpg" width="23%" alt="" />
 </div>
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
 <img src="assets/screenshots/register.jpg" width="23%" alt="" />
 <img src="assets/screenshots/home1.jpg" width="23%" alt="" />
 <img src="assets/screenshots/home2.jpg" width="23%" alt="" />
 <img src="assets/screenshots/home3.jpg" width="23%" alt="" />
 </div>
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
 <img src="assets/screenshots/detail_author.jpg" width="23%" alt="" />
 <img src="assets/screenshots/detail_special_book.jpg" width="23%" alt="" />
 <img src="assets/screenshots/categories.jpg" width="23%" alt="" />
 <img src="assets/screenshots/detail_cate.jpg" width="23%" alt="" />
 </div>
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
 <img src="assets/screenshots/detail1.jpg" width="23%" alt="" />
 <img src="assets/screenshots/detail2.jpg" width="23%" alt="" />
 <img src="assets/screenshots/detail3.jpg" width="23%" alt="" />
 <img src="assets/screenshots/comment.jpg" width="23%" alt="" />
 </div>
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
 <img src="assets/screenshots/read.jpg" width="23%" alt="" />
 <img src="assets/screenshots/summary.jpg" width="23%" alt="" />
 <img src="assets/screenshots/chatbot.jpg" width="23%" alt="" />
 <img src="assets/screenshots/favorite.jpg" width="23%" alt="" />
 </div>
 
-<div style="display: flex; justify-content: space-between;">
+<div style="display: flex; justify-content: flex-start; margin-bottom: 20px;">
 <img src="assets/screenshots/search.jpg" width="23%" alt="" />
 <img src="assets/screenshots/profile1.jpg" width="23%" alt="" />
 <img src="assets/screenshots/profile2.jpg" width="23%" alt="" />
