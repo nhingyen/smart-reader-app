@@ -2,6 +2,10 @@
 
 SmartBook App is a smart book reading and listening application designed to provide a seamless experience for discovering, reading, and listening to books. The project is built with a complete Client-Server architecture using Flutter (Frontend) and Node.js (Backend).
 
+## Demo video
+
+Watch demo: https://www.youtube.com/watch?v=3IAfKmN8pgM
+
 ## Features
 
 Home Screen:
