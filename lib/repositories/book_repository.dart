@@ -6,9 +6,18 @@ import 'package:smart_reader/models/categories.dart';
 import 'package:smart_reader/models/chapter_detail.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:smart_reader/models/reivew.dart';
 
 class BookRepository {
-  static final String _baseUrl = dotenv.env['baseURL']!;
+  // Sửa thành static GETTER
+  static String get _baseUrl {
+    final url = dotenv.env['baseURL'];
+    if (url == null) {
+      // Báo lỗi rõ ràng hơn nếu .env bị thiếu
+      throw Exception("Lỗi: Không tìm thấy 'baseURL' trong file .env");
+    }
+    return url;
+  }
   // 3. Dùng cho Điện thoại thật (CẮM CÁP hoặc CÙNG WIFI):
   // (Thay 192.168.1.5 bằng IP Wifi của MÁY TÍNH bạn)
   // static const String _baseUrl = "http://192.168.1.5:5001";
@@ -66,7 +75,7 @@ class BookRepository {
 
   //Lấy dữ liệu tổng hợp cho Home
   Future<Map<String, dynamic>> fetchHomeData() async {
-    print('EPOSITORY: Fetching all data for Home Screen');
+    print('REPOSITORY: Fetching all data for Home Screen');
     final response = await http.get(Uri.parse('$_baseUrl/api/home'));
     final data = _handleResponse(response);
 
@@ -75,13 +84,11 @@ class BookRepository {
         .map((json) => BookCategory.fromJson(json))
         .toList();
 
-    final authors = (data['authors'] as List)
-        .map((json) => Author.fromJson(json))
-        .toList();
+    final authors =
+        (data['authors'] as List).map((json) => Author.fromJson(json)).toList();
 
-    final newBooks = (data['newBooks'] as List)
-        .map((json) => Book.fromJson(json))
-        .toList();
+    final newBooks =
+        (data['newBooks'] as List).map((json) => Book.fromJson(json)).toList();
 
     final specialBooks = (data['specialBooks'] as List)
         .map((json) => Book.fromJson(json))
@@ -92,7 +99,117 @@ class BookRepository {
       'authors': authors,
       'newBooks': newBooks,
       'specialBooks': specialBooks,
-      'continueReading': <Book>[],
     };
+  }
+
+  //Lấy chi tiết tác giả
+  Future<Map<String, dynamic>> fetchAuthorDetails(String authorId) async {
+    print('REPOSITORY: Fetching author details for: $authorId');
+    final response = await http.get(
+      Uri.parse('$_baseUrl/api/authors/$authorId'),
+    );
+    print("RESPONSE RAW: ${response.body}");
+    final data = _handleResponse(response);
+    // 1️⃣ Parse author
+    final author = Author.fromJson(data['author']);
+
+    // 2️⃣ Parse books
+    List<Book> books = [];
+    if (data['books'] != null) {
+      books =
+          (data['books'] as List).map((item) => Book.fromJson(item)).toList();
+    }
+
+    return {'author': author, 'books': books};
+  }
+
+  // Hàm tìm kiếm sách
+  Future<List<Book>> searchBooks(String query) async {
+    try {
+      print('🔎 Searching for: $query');
+      final response = await http.get(
+        Uri.parse('$_baseUrl/api/books/search?q=$query'),
+      );
+
+      final data = _handleResponse(response) as List;
+      return data.map((json) => Book.fromJson(json)).toList();
+    } catch (e) {
+      print("Lỗi searchBooks: $e");
+      return []; // Trả về rỗng nếu lỗi
+    }
+  }
+
+  // Hàm chuyển Text -> Audio
+  Future<String?> getAudioFromText(String text) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/tts'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"text": text}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        return data['audioContent']; // Trả về chuỗi Base64
+      } else {
+        print("Lỗi API TTS: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      print("Lỗi kết nối TTS: $e");
+      return null;
+    }
+  }
+
+  // Hàm gọi AI tóm tắt
+  Future<String?> summarizeChapter(String text) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/ai/summarize'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"text": text}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        return data['summary']; // Trả về đoạn văn tóm tắt
+      } else {
+        print("Lỗi API AI: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      print("Lỗi kết nối AI: $e");
+      return null;
+    }
+  }
+
+  // 1. Gửi bình luận (Comment Only)
+  Future<void> submitReview(
+      {required String userId,
+      required String bookId,
+      required String comment // ⚡️ KHÔNG CẦN RATING
+      }) async {
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/reviews'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'userId': userId,
+        'bookId': bookId,
+        'comment': comment, // Chỉ gửi comment
+      }),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to submit comment');
+    }
+  }
+
+  // 2. Lấy danh sách đánh giá
+  Future<List<Review>> fetchReviews(String bookId) async {
+    final response = await http.get(Uri.parse('$_baseUrl/api/reviews/$bookId'));
+    if (response.statusCode == 200) {
+      final List data = json.decode(utf8.decode(response.bodyBytes));
+      return data.map((json) => Review.fromJson(json)).toList();
+    }
+    return [];
   }
 }

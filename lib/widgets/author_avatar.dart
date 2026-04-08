@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:smart_reader/theme/app_colors.dart";
 
 class AuthorAvatar extends StatelessWidget {
   final String name;
@@ -26,7 +27,7 @@ class AuthorAvatar extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               name,
-              style: const TextStyle(fontSize: 12),
+              style: const TextStyle(fontSize: 12, color: AppColors.textDark),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

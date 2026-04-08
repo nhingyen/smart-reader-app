@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_reader/screens/home/home_screen.dart';
+import 'package:smart_reader/screens/library/library_screen.dart';
+import 'package:smart_reader/screens/profile/profile_screen.dart';
+import 'package:smart_reader/screens/search/search_screen.dart';
 import 'package:smart_reader/widgets/footer/footer_item.dart';
 
 class CustomFooter extends StatefulWidget {
@@ -18,30 +20,69 @@ class CustomFooter extends StatefulWidget {
 }
 
 class _CustomFooterState extends State<CustomFooter> {
-  int _selectedIndex = 0;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
+    widget.onItemSelected(index);
+
+    // ✅ Kiểm tra nếu đang ở màn hình hiện tại thì không làm gì
+    if (index == widget.selectedIndex) return;
+
     switch (index) {
-      case 0:
-        Navigator.pushReplacement(
+      case 0: // Trang chủ
+        // Nếu đang ở màn hình khác, pop về Home
+        Navigator.popUntil(context, (route) => route.isFirst);
+        break;
+
+      case 1: // Tìm kiếm
+        Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => const SearchScreen()),
         );
         break;
-      case 1:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+
+      case 2: // Thư viện (Yêu thích)
+        if (_selectedIndex == 0) {
+          // Từ Home -> Library: dùng push
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LibraryScreen()),
+          );
+        } else {
+          // Từ màn khác -> Library: pop về Home rồi push Library
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LibraryScreen()),
+          );
+        }
         break;
-      case 2:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+
+      case 3: // Profile
+        if (_selectedIndex == 0) {
+          // Từ Home -> Profile: dùng push
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          );
+        } else {
+          // Từ màn khác -> Profile: pop về Home rồi push Profile
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          );
+        }
+        break;
     }
   }
 
@@ -77,8 +118,8 @@ class _CustomFooterState extends State<CustomFooter> {
           FooterItem(
             icon: Icons.person_outlined,
             label: 'Bạn đọc',
-            onTap: () => _onItemTapped(2),
-            isSelected: _selectedIndex == 2,
+            onTap: () => _onItemTapped(3),
+            isSelected: _selectedIndex == 3,
           ),
         ],
       ),

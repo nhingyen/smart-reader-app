@@ -61,6 +61,7 @@ class CategoryScreen extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w500,
+                              color: AppColors.textDark,
                             ),
                           ),
                           TextButton(

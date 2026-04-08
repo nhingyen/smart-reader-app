@@ -1,28 +1,107 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_reader/models/categories.dart';
+import 'package:smart_reader/models/chapter_info.dart';
+import 'package:smart_reader/models/reading_progess.dart';
 import 'package:smart_reader/repositories/book_repository.dart';
+import 'package:smart_reader/repositories/user_repository.dart';
 import 'package:smart_reader/screens/book_detail/book_detail_screen.dart';
+import 'package:smart_reader/screens/book_list/book_list_screen.dart';
 import 'package:smart_reader/screens/category/category_screen.dart';
 import 'package:smart_reader/screens/category_detail/category_detail_screen.dart';
 import 'package:smart_reader/screens/home/bloc/home_bloc.dart';
 import 'package:smart_reader/screens/home/bloc/home_event.dart';
 import 'package:smart_reader/screens/home/bloc/home_state.dart';
+import 'package:smart_reader/screens/author_detail/author_detail_screen.dart';
+import 'package:smart_reader/screens/reader/reader_screen.dart';
+import 'package:smart_reader/screens/search/search_screen.dart';
 import 'package:smart_reader/theme/app_colors.dart';
 import 'package:smart_reader/widgets/author_avatar.dart';
-import 'package:smart_reader/widgets/book_card.dart';
+import 'package:smart_reader/widgets/continue_reading_card.dart';
 import 'package:smart_reader/widgets/footer/footer.dart';
 import 'package:smart_reader/widgets/special_card.dart';
 import 'package:smart_reader/widgets/top_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Future<void> _handleContinueReading(
+    BuildContext context,
+    ReadingProgress item,
+  ) async {
+    // 1. Hiện Loading để người dùng đợi
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // 2. Gọi API lấy chi tiết sách để có danh sách chương
+      // (Dùng context.read để lấy Repository)
+      final bookRepo = context.read<BookRepository>();
+      final bookDetails = await bookRepo.fetchBookDetails(item.bookId);
+
+      // 3. Convert danh sách chương từ Book -> ChapterInfo (nếu cần)
+      // Giả sử bookDetails.chapters là List<dynamic> hoặc List<Chapter>
+      // Bạn cần map nó sang List<ChapterInfo> mà ReaderScreen yêu cầu
+      List<ChapterInfo> allChapters = bookDetails.chapters
+          .map((c) => ChapterInfo(id: c.id, title: c.title, order: c.order))
+          .toList();
+
+      // 4. Tìm vị trí (index) của chương đang đọc dở
+      int index = allChapters.indexWhere((c) => c.id == item.chapterId);
+
+      // Nếu không tìm thấy (lỡ chương đó bị xóa), cho về chương 1 (index 0)
+      if (index == -1) index = 0;
+
+      // 5. Tắt Loading
+      if (context.mounted) Navigator.pop(context);
+
+      // 6. Chuyển sang màn hình đọc
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ReaderScreen(
+              bookId: item.bookId,
+              chapterId: allChapters[index].id, // Đảm bảo lấy ID từ list chuẩn
+              bookTitle: item.title,
+              chapterTitle: allChapters[index].title,
+              allChapters: allChapters,
+              currentChapterIndex: index,
+            ),
+          ),
+        ).then((_) {
+          // Khi quay lại từ màn hình đọc, reload lại Home để cập nhật tiến độ mới
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null && context.mounted) {
+            context.read<HomeBloc>().add(LoadHomeDataEvent(userId: user.uid));
+          }
+        });
+      }
+    } catch (e) {
+      // Tắt loading nếu lỗi
+      if (context.mounted) Navigator.pop(context);
+
+      print("Lỗi mở sách: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Không thể mở sách: $e")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          HomeBloc(repository: BookRepository())..add(LoadHomeDataEvent()),
+      create: (_) => HomeBloc(
+        bookRepository: context.read<BookRepository>(),
+        userRepository: context.read<UserRepository>(),
+      )..add(LoadHomeDataEvent(userId: FirebaseAuth.instance.currentUser?.uid)),
       child: Scaffold(
         backgroundColor: Colors.white,
         body: BlocBuilder<HomeBloc, HomeState>(
@@ -53,7 +132,14 @@ class HomeScreen extends StatelessWidget {
                         color: Colors.black,
                         size: 22,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SearchScreen(),
+                          ),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: const Icon(
@@ -65,7 +151,6 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 body: Column(
                   children: [
                     Expanded(
@@ -155,6 +240,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
@@ -162,8 +248,7 @@ class HomeScreen extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) =>
-                                          CategoryScreen(), // Thêm tạm trang Home trước đã
+                                      builder: (context) => CategoryScreen(),
                                     ),
                                   );
                                 },
@@ -186,22 +271,20 @@ class HomeScreen extends StatelessWidget {
                               children: state.categories.map((c) {
                                 final selected =
                                     state.selectedCategory?.categoryName ==
-                                    c.categoryName;
+                                        c.categoryName;
                                 return GestureDetector(
                                   onTap: () {
                                     print(
                                       "=> Category tapped: ${c.categoryName}",
                                     );
                                     context.read<HomeBloc>().add(
-                                      CategorySelectedEvent(c),
-                                    );
+                                          CategorySelectedEvent(c),
+                                        );
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            CategoryDetailScreen(
-                                              category: c,
-                                            ), // Thêm tạm trang Home trước đã
+                                            CategoryDetailScreen(category: c),
                                       ),
                                     );
                                   },
@@ -235,6 +318,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
@@ -250,29 +334,33 @@ class HomeScreen extends StatelessWidget {
                             ],
                           ),
                           SizedBox(
-                            height: 175,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: state.continueReading.map((b) {
-                                return BookCard(
-                                  b.bookId,
-                                  b.title,
-                                  b.imgUrl,
-                                  () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            BookDetailScreen(bookId: b.bookId),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }).toList(),
-                            ),
+                            height:
+                                210, // Tăng lên khoảng 200-220 (150 ảnh + text)
+                            child: state.readingProgress.isEmpty
+                                ? const Center(
+                                    child: Text("Bạn chưa có sách đang đọc dở"),
+                                  )
+                                : ListView.builder(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: state.readingProgress.length,
+                                    itemBuilder: (context, index) {
+                                      return ContinueReadingCard(
+                                        progress: state.readingProgress[index],
+                                        onTap: () {
+                                          _handleContinueReading(
+                                            context,
+                                            state.readingProgress[index],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
                           ),
 
-                          SizedBox(height: 5),
+                          // SizedBox(height: 2),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -281,6 +369,7 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
@@ -303,7 +392,17 @@ class HomeScreen extends StatelessWidget {
                                 return AuthorAvatar(
                                   name: a.authorName,
                                   avatarUrl: a.avatarUrl,
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AuthorDetailScreen(
+                                          authorId: a.authorId,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 );
                               }).toList(),
                             ),
@@ -317,10 +416,21 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookListScreen(
+                                        title: "Sách mới",
+                                        books: state.newBooks,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
                                   "Xem tất cả",
                                   style: TextStyle(
@@ -350,10 +460,21 @@ class HomeScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                               TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookListScreen(
+                                        title: "Sách đặc biệt",
+                                        books: state.specialBooks,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
                                   "Xem tất cả",
                                   style: TextStyle(
@@ -397,7 +518,7 @@ class HomeScreen extends StatelessWidget {
             } else if (state is HomeError) {
               return Center(child: Text(state.message));
             }
-            return Center(child: Text("Chưa có dữ liệu"));
+            return const SizedBox.shrink();
           },
         ),
         bottomNavigationBar: CustomFooter(

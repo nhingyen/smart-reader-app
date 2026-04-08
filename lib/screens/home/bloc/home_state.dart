@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:smart_reader/models/author.dart';
 import 'package:smart_reader/models/book.dart';
 import 'package:smart_reader/models/categories.dart';
+import 'package:smart_reader/models/reading_progess.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
@@ -16,15 +16,17 @@ class HomeInitial extends HomeState {}
 class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
-  final List<Book> continueReading;
+  final List<ReadingProgress> readingProgress;
+  final List<Book> libraryBooks;
   final List<Author> authors;
   final List<Book> newBooks;
   final List<Book> specialBooks;
   final List<BookCategory> categories;
   final BookCategory? selectedCategory;
 
-  HomeLoaded({
-    required this.continueReading,
+  const HomeLoaded({
+    required this.readingProgress,
+    this.libraryBooks = const [],
     required this.authors,
     required this.newBooks,
     required this.specialBooks,
@@ -35,7 +37,7 @@ class HomeLoaded extends HomeState {
   @override
   List<Object?> props() => [
     categories,
-    continueReading,
+    readingProgress,
     authors,
     newBooks,
     specialBooks,

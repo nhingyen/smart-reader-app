@@ -9,7 +9,12 @@ abstract class HomeEvent extends Equatable {
 }
 
 class LoadHomeDataEvent extends HomeEvent {
-  const LoadHomeDataEvent();
+  final String? userId; // Thêm biến này
+
+  const LoadHomeDataEvent({this.userId});
+
+  @override
+  List<Object> props() => [userId ?? ''];
 }
 
 class CategorySelectedEvent extends HomeEvent {

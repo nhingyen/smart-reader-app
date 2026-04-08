@@ -10,7 +10,7 @@ abstract class BookDetailEvent extends Equatable {
 class LoadBookDetailEvent extends BookDetailEvent {
   final String bookId;
 
-  LoadBookDetailEvent({required this.bookId});
+  const LoadBookDetailEvent({required this.bookId});
 
   @override
   List<Object?> props() => [bookId];
