@@ -205,8 +205,8 @@ class _ReaderViewState extends State<ReaderView> {
   }
 
   Future<void> _onExit() async {
-    await _updateStats();
-    _saveProgress();
+    // await _updateStats();
+    // _saveProgress();
     if (mounted) Navigator.pop(context);
   }
 
