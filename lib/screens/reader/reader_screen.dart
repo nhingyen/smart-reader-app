@@ -11,6 +11,7 @@ import 'package:smart_reader/screens/ai_chat/ai_chat_dialog.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_bloc.dart';
 import 'package:smart_reader/screens/reader/bloc/reader_state.dart';
 import 'package:smart_reader/theme/app_colors.dart';
+import 'package:lottie/lottie.dart';
 
 // === 1. WIDGET VỎ (WRAPPER) - NHIỆM VỤ KHỞI TẠO BLOC ===
 class ReaderScreen extends StatelessWidget {
@@ -332,6 +333,69 @@ class _ReaderViewState extends State<ReaderView> {
     }
   }
 
+  //logic hieu ung chuc mung
+  void _showCelebrationDialog() {
+    showGeneralDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.black.withOpacity(0.8),
+        transitionDuration: const Duration(milliseconds: 500),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return Stack(alignment: Alignment.center, children: [
+            ScaleTransition(
+              scale: CurveTween(curve: Curves.easeOutBack).animate(animation),
+              child: AlertDialog(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                contentPadding: const EdgeInsets.all(24),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      '🎉Chúc mừng!',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "Bạn đã hoàn thành xuất sắc cuốn sách '${widget.bookTitle}'.",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop(); // 1. Tắt dialog pháo hoa
+                          _onExit(); // 2. Gọi hàm _onExit để lưu tiến độ và thoát về trang trước
+                        },
+                        child: const Text("Tuyệt vời",
+                            style: TextStyle(fontSize: 16)),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            IgnorePointer(
+              child: Lottie.asset(
+                'assets/lottie/fireworks.json',
+                width: 300,
+                height: 300,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ]);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     // KHÔNG bọc BlocProvider ở đây nữa
@@ -546,7 +610,8 @@ class _ReaderViewState extends State<ReaderView> {
             ]),
           )
         else
-          Container(),
+          const SizedBox(
+              width: 100), // Giữ khoảng trống để nút bên kia luôn đẩy sang phải
         if (hasNext)
           TextButton(
             onPressed: () {
@@ -571,7 +636,22 @@ class _ReaderViewState extends State<ReaderView> {
             ]),
           )
         else
-          Container(),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange, // Màu nổi bật cho nút hoàn thành
+              foregroundColor: Colors.white,
+              elevation: 3,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+            ),
+            icon: const Icon(Icons.star_rounded, size: 20),
+            label: const Text("Hoàn thành sách",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            onPressed: () {
+              _showCelebrationDialog();
+            },
+          ),
       ],
     );
   }

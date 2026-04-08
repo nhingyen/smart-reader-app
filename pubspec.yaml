@@ -64,6 +64,7 @@ dependencies:
   package_info_plus: ^8.0.0
   audioplayers: ^6.5.1
   image_picker: ^1.0.7
+  lottie: 3.3.1
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/lottie/fireworks.json
     - .env
   # To add assets to your application, add an assets section, like this:
   # assets:
