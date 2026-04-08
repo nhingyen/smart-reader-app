@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "20719904791",
+    "project_id": "smart-reader-app-f9158",
+    "storage_bucket": "smart-reader-app-f9158.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:20719904791:android:eacf85a0817c887ea01452",
+        "android_client_info": {
+          "package_name": "com.example.smart_reader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "20719904791-g0fvv6s5nb1gp8k52picpi3ohm9gc6ic.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_reader",
+            "certificate_hash": "983e2d8926b4faa514462072a98989e7da3fcf58"
+          }
+        },
+        {
+          "client_id": "20719904791-pso58emdcgj6fmj2h0n96sv9kar11tq1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.smart_reader",
+            "certificate_hash": "22c77a6cb2254e735c3c4d4b419887dd9f384405"
+          }
+        },
+        {
+          "client_id": "20719904791-kutun8v4bnfetb2s3p10dq3cmqdvk9uj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbRvSCd66gEDm2ChPvLghkTO-pLNube1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "20719904791-kutun8v4bnfetb2s3p10dq3cmqdvk9uj.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "20719904791-5o3sn289p0fdgvrqikgktucp9uijmfs0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.smartReader"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
